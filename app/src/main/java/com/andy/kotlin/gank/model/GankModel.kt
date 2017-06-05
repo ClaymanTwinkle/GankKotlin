@@ -1,8 +1,7 @@
 package com.andy.kotlin.gank.model
 
 /**
- * todo 类名
-
+ * GankModel
  * @author andyqtchen <br></br>
  * *         gank 主要的数据结构
  * *         创建日期：2017/6/5 13:36

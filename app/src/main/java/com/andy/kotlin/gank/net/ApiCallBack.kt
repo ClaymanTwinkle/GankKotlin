@@ -5,9 +5,9 @@ import retrofit2.adapter.rxjava.HttpException
 import rx.Subscriber
 
 /**
- * todo 类名
+ * ApiCallBack
  * @author andyqtchen <br/>
- * todo 实现的主要功能。
+ * 网络回调
  * 创建日期：2017/6/5 11:34
  */
 abstract class ApiCallBack<M> : Subscriber<M>() {
