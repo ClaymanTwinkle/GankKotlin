@@ -3,6 +3,7 @@ package com.andy.kotlin.gank
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.view.MenuItem
 import android.view.View
 import android.webkit.WebChromeClient
@@ -58,12 +59,22 @@ class WebBrowserActivity : BaseActivity() {
         return super.onOptionsItemSelected(item)
     }
 
+    override fun isRegisterDispatcher(): Boolean {
+        return false
+    }
+
     companion object {
         var EXTRA_URL = "url"
         var EXTRA_TITLE = "title"
 
         fun startActivity(aty: Activity, title: String, url: String) {
             aty.startActivity(Intent(aty.applicationContext, WebBrowserActivity::class.java)
+                    .putExtra(EXTRA_URL, url)
+                    .putExtra(EXTRA_TITLE, title))
+        }
+
+        fun startActivity(fragment: Fragment, title: String, url: String) {
+            fragment.startActivity(Intent(fragment.context, WebBrowserActivity::class.java)
                     .putExtra(EXTRA_URL, url)
                     .putExtra(EXTRA_TITLE, title))
         }

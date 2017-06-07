@@ -1,4 +1,4 @@
-package com.andy.kotlin.gank
+package com.andy.kotlin.gank.fragment
 
 import android.content.Context
 import android.graphics.Rect
@@ -6,36 +6,49 @@ import android.os.Bundle
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.andy.kotlin.gank.R
+import com.andy.kotlin.gank.WebBrowserActivity
 import com.andy.kotlin.gank.adapter.LazyAdapter
 import com.andy.kotlin.gank.adapter.ListLazyAdapter
+import com.andy.kotlin.gank.event.ApiEvent
 import com.andy.kotlin.gank.model.GankModel
 import com.andy.kotlin.gank.net.ApiResponse
 import com.andy.kotlin.gank.util.DensityUtils
-import com.andy.kotlinandroid.BaseActivity
-import com.andy.kotlinandroid.net.ApiCallBack
+import com.andy.kotlin.gank.util.ToastUtils
 import com.andy.kotlinandroid.net.ApiClient
 import com.bumptech.glide.Glide
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fragment_main.*
 import kotlinx.android.synthetic.main.list_item_gank.view.*
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
+/**
+ * MainFragment
 
-class MainActivity : BaseActivity() {
+ * @author andyqtchen <br></br>
+ * *         MainFragment
+ * *         创建日期：2017/6/7 15:29
+ */
+class MainFragment : BaseFragment() {
 
     private val mAdapter = LinearAdapter()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        init()
+    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater?.inflate(R.layout.fragment_main, container, false)
     }
 
-    fun init(){
-        mRecyclerView.layoutManager = LinearLayoutManager(this)
-        mRecyclerView.addItemDecoration(object : DividerItemDecoration(this, DividerItemDecoration.VERTICAL) {
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        init()
+        loadRandomDataList()
+    }
+
+    private fun init() {
+        mRecyclerView.layoutManager = LinearLayoutManager(context)
+        mRecyclerView.addItemDecoration(object : DividerItemDecoration(context, DividerItemDecoration.VERTICAL) {
             override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
                 super.getItemOffsets(outRect, view, parent, state)
                 outRect.top = DensityUtils.dip2px(view.context, 8F)
@@ -48,33 +61,42 @@ class MainActivity : BaseActivity() {
         mRecyclerView.adapter = mAdapter
 
         mSwipeRefreshLayout.setOnRefreshListener {
-            addSubscription(ApiClient.retrofit().loadRandomData("Android", 20), object : ApiCallBack<ApiResponse<GankModel>>() {
-                override fun onSuccess(model: ApiResponse<GankModel>) {
-                    Log.d("andy", model.toString())
-                    if (model.isError) {
-                        return
-                    }
-                    mAdapter.setAllItemsAndRefresh(model.results!!)
-                }
-
-                override fun onFailure(msg: String?) {
-                    Log.d("andy", "onFailure=" + msg)
-                }
-
-                override fun onFinish() {
-                    Log.d("andy", "onFinish")
-                    mSwipeRefreshLayout.isRefreshing = false
-                }
-            }
-            )
+            loadRandomDataList()
         }
 
         mAdapter.setOnItemClickListener(object : LazyAdapter.OnItemClickListener {
             override fun onItemClick(position: Int, view: View) {
                 val model = mAdapter.getItem(position)
-                WebBrowserActivity.startActivity(this@MainActivity, model.desc, model.url)
+                WebBrowserActivity.startActivity(this@MainFragment, model.desc, model.url)
             }
         })
+
+        // 首次进入，转个菊花先
+        mSwipeRefreshLayout.measure(0, 0)
+        mSwipeRefreshLayout.isRefreshing = true
+    }
+
+    private fun loadRandomDataList() {
+        addSubscription(ApiClient.retrofit().loadRandomData("Android", 20))
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onResponse(event: ApiEvent<ApiResponse<GankModel>>) {
+        mSwipeRefreshLayout.isRefreshing = false
+
+        if (event.isSuccess) {
+            if (event.body?.isError!!) {
+                ToastUtils.toast(context, R.string.server_error)
+                return
+            }
+            mAdapter.setAllItemsAndRefresh(event.body?.results!!)
+        } else {
+            ToastUtils.toast(context, event.errorMsg)
+        }
+    }
+
+    override fun isRegisterDispatcher(): Boolean {
+        return true
     }
 
     private inner class LinearAdapter : ListLazyAdapter<GankModel, ViewHolder>() {
