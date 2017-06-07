@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context="com.andy.kotlin.gank.MainActivity">
 
-    <android.support.v4.widget.SwipeRefreshLayout
+    <com.andy.kotlin.gank.widget.RefreshLayout
         android:id="@+id/mSwipeRefreshLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -16,5 +16,5 @@
             android:id="@+id/mRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
-    </android.support.v4.widget.SwipeRefreshLayout>
+    </com.andy.kotlin.gank.widget.RefreshLayout>
 </LinearLayout>

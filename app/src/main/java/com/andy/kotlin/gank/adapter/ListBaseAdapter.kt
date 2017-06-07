@@ -8,7 +8,7 @@ import java.util.*
  * @author andyqtchen <br></br>
  * *         创建日期：2017/6/5 16:31
  */
-abstract class ListLazyAdapter<T, VH : RecyclerView.ViewHolder> : LazyAdapter<VH>() {
+abstract class ListBaseAdapter<T, VH : RecyclerView.ViewHolder> : BaseAdapter<VH>() {
 
     private val mData = ArrayList<T>()
 

@@ -11,7 +11,7 @@ import android.view.ViewGroup
  * @author andyqtchen <br></br>
  * *         创建日期：2017/6/5 16:28
  */
-abstract class LazyAdapter<VH : RecyclerView.ViewHolder> : RecyclerView.Adapter<VH>() {
+abstract class BaseAdapter<VH : RecyclerView.ViewHolder> : RecyclerView.Adapter<VH>() {
 
     private var mOnItemClickListener: OnItemClickListener? = null
     private var mOnItemLongClickListener: OnItemLongClickListener? = null

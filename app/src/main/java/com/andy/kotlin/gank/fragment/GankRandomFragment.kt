@@ -11,8 +11,9 @@ import android.view.View
 import android.view.ViewGroup
 import com.andy.kotlin.gank.R
 import com.andy.kotlin.gank.WebBrowserActivity
-import com.andy.kotlin.gank.adapter.LazyAdapter
-import com.andy.kotlin.gank.adapter.ListLazyAdapter
+import com.andy.kotlin.gank.adapter.BaseAdapter
+import com.andy.kotlin.gank.adapter.BaseViewHolder
+import com.andy.kotlin.gank.adapter.ListBaseAdapter
 import com.andy.kotlin.gank.event.ApiEvent
 import com.andy.kotlin.gank.model.GankModel
 import com.andy.kotlin.gank.net.ApiResponse
@@ -20,7 +21,7 @@ import com.andy.kotlin.gank.util.DensityUtils
 import com.andy.kotlin.gank.util.ToastUtils
 import com.andy.kotlinandroid.net.ApiClient
 import com.bumptech.glide.Glide
-import kotlinx.android.synthetic.main.fragment_main.*
+import kotlinx.android.synthetic.main.fragment_random_gank.*
 import kotlinx.android.synthetic.main.list_item_gank.view.*
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -32,12 +33,12 @@ import org.greenrobot.eventbus.ThreadMode
  * *         MainFragment
  * *         创建日期：2017/6/7 15:29
  */
-class MainFragment : BaseFragment() {
+class GankRandomFragment : BaseFragment() {
 
     private val mAdapter = LinearAdapter()
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater?.inflate(R.layout.fragment_main, container, false)
+        return inflater?.inflate(R.layout.fragment_random_gank, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -64,15 +65,14 @@ class MainFragment : BaseFragment() {
             loadRandomDataList()
         }
 
-        mAdapter.setOnItemClickListener(object : LazyAdapter.OnItemClickListener {
+        mAdapter.setOnItemClickListener(object : BaseAdapter.OnItemClickListener {
             override fun onItemClick(position: Int, view: View) {
                 val model = mAdapter.getItem(position)
-                WebBrowserActivity.startActivity(this@MainFragment, model.desc, model.url)
+                WebBrowserActivity.startActivity(this@GankRandomFragment, model.desc, model.url)
             }
         })
 
         // 首次进入，转个菊花先
-        mSwipeRefreshLayout.measure(0, 0)
         mSwipeRefreshLayout.isRefreshing = true
     }
 
@@ -99,9 +99,9 @@ class MainFragment : BaseFragment() {
         return true
     }
 
-    private inner class LinearAdapter : ListLazyAdapter<GankModel, ViewHolder>() {
+    private inner class LinearAdapter : ListBaseAdapter<GankModel, ViewHolder>() {
         override fun onBindViewHolder(holder: ViewHolder, data: GankModel, position: Int) {
-            holder.bind(data, position)
+            holder.bindView(data, position)
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, context: Context, viewType: Int): ViewHolder {
@@ -109,8 +109,8 @@ class MainFragment : BaseFragment() {
         }
     }
 
-    private inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        fun bind(data: GankModel, position: Int) = with(itemView) {
+    private inner class ViewHolder(itemView: View) : BaseViewHolder<GankModel>(itemView) {
+        override fun bindView(data: GankModel, position: Int) = with(itemView) {
             if (data.images == null || data.images.isEmpty()) {
                 ivPic.visibility = View.GONE
             } else {
