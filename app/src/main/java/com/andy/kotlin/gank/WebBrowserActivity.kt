@@ -4,10 +4,12 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
+import android.webkit.WebChromeClient
+import android.webkit.WebView
 import android.webkit.WebViewClient
 import com.andy.kotlinandroid.BaseActivity
 import kotlinx.android.synthetic.main.activity_web_brower.*
-
 
 
 class WebBrowserActivity : BaseActivity() {
@@ -30,6 +32,19 @@ class WebBrowserActivity : BaseActivity() {
 
         mWebView.settings.javaScriptEnabled = true
         mWebView.setWebViewClient(WebViewClient())
+        mWebView.setWebChromeClient(object : WebChromeClient() {
+            override fun onProgressChanged(view: WebView?, newProgress: Int) {
+                super.onProgressChanged(view, newProgress)
+                if (newProgress == 100) {
+                    mProgressBar.progress = newProgress
+                    mProgressBar.visibility = View.GONE
+                    //progressBar.setProgress(newProgress)
+                } else {
+                    mProgressBar.visibility = View.VISIBLE
+                    mProgressBar.progress = newProgress//设置加载进度
+                }
+            }
+        })
         mWebView.loadUrl(mUrl)
     }
 
