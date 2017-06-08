@@ -126,7 +126,6 @@ class GankRandomFragment : BaseFragment() {
                 ivPic.visibility = View.GONE
             } else {
                 ivPic.visibility = View.VISIBLE
-                System.err.println(data.images[0])
                 Glide.with(context)
                         .load(data.images[0])
                         .centerCrop()
