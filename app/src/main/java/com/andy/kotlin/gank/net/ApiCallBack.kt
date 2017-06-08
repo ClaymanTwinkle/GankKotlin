@@ -1,6 +1,6 @@
 package com.andy.kotlinandroid.net
 
-import com.noveogroup.android.log.Log
+import com.andy.kotlin.gank.util.GLog
 import retrofit2.adapter.rxjava.HttpException
 import rx.Subscriber
 
@@ -28,7 +28,7 @@ abstract class ApiCallBack<M> : Subscriber<M>() {
             val httpException = e
             val code = httpException.code()
             var msg = httpException.message
-            Log.d("code = " + code)
+            GLog.d("code = " + code)
             if (code == 554) {
                 msg = "网络不给力"
             } else if (code == 502 || code == 404) {

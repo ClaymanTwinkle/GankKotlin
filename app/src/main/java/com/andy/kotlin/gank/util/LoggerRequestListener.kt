@@ -14,14 +14,14 @@ import java.util.*
  */
 class LoggerRequestListener : RequestListener<String, GlideDrawable> {
     override fun onException(e: Exception, model: String, target: Target<GlideDrawable>, isFirstResource: Boolean): Boolean {
-        android.util.Log.e("GLIDE", String.format(Locale.ROOT,
-                "onException(%s, %s, %s, %s)", e, model, target, isFirstResource), e)
+        GLog.e(String.format(Locale.ROOT,
+                "Glide:onException(%s, %s, %s, %s)", e, model, target, isFirstResource), e)
         return false
     }
 
     override fun onResourceReady(resource: GlideDrawable, model: String, target: Target<GlideDrawable>, isFromMemoryCache: Boolean, isFirstResource: Boolean): Boolean {
-        android.util.Log.d("GLIDE", String.format(Locale.ROOT,
-                "onResourceReady(%s, %s, %s, %s, %s)", resource, model, target, isFromMemoryCache, isFirstResource))
+        GLog.d(String.format(Locale.ROOT,
+                "Glide:onResourceReady(%s, %s, %s, %s, %s)", resource, model, target, isFromMemoryCache, isFirstResource))
         return false
     }
 }
