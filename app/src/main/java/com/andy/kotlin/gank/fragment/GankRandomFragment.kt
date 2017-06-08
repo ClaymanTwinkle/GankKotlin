@@ -6,11 +6,12 @@ import android.os.Bundle
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.RecyclerView.SCROLL_STATE_SETTLING
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.andy.kotlin.gank.R
-import com.andy.kotlin.gank.WebBrowserActivity
+import com.andy.kotlin.gank.activity.WebBrowserActivity
 import com.andy.kotlin.gank.adapter.BaseAdapter
 import com.andy.kotlin.gank.adapter.BaseViewHolder
 import com.andy.kotlin.gank.adapter.ListBaseAdapter
@@ -21,6 +22,7 @@ import com.andy.kotlin.gank.util.DensityUtils
 import com.andy.kotlin.gank.util.ToastUtils
 import com.andy.kotlinandroid.net.ApiClient
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import kotlinx.android.synthetic.main.fragment_random_gank.*
 import kotlinx.android.synthetic.main.list_item_gank.view.*
 import org.greenrobot.eventbus.Subscribe
@@ -60,6 +62,15 @@ class GankRandomFragment : BaseFragment() {
         })
 
         mRecyclerView.adapter = mAdapter
+        mRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView?, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                when (newState) {
+                    SCROLL_STATE_SETTLING -> Glide.with(context).pauseRequests()
+                    else -> Glide.with(context).resumeRequests()
+                }
+            }
+        })
 
         mSwipeRefreshLayout.setOnRefreshListener {
             loadRandomDataList()
@@ -115,9 +126,11 @@ class GankRandomFragment : BaseFragment() {
                 ivPic.visibility = View.GONE
             } else {
                 ivPic.visibility = View.VISIBLE
-                Glide.with(itemView.context)
+                System.err.println(data.images[0])
+                Glide.with(context)
                         .load(data.images[0])
                         .centerCrop()
+                        .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                         .into(ivPic)
             }
             tvTitle.text = data.desc

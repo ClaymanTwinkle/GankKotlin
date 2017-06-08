@@ -1,8 +1,8 @@
-package com.andy.kotlin.gank
+package com.andy.kotlin.gank.activity
 
 import android.os.Bundle
+import com.andy.kotlin.gank.R
 import com.andy.kotlin.gank.fragment.GankRandomFragment
-import com.andy.kotlinandroid.BaseActivity
 
 
 class MainActivity : BaseActivity() {

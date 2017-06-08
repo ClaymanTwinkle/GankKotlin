@@ -1,4 +1,4 @@
-package com.andy.kotlin.gank
+package com.andy.kotlin.gank.activity
 
 import android.app.Activity
 import android.content.Intent
@@ -9,7 +9,7 @@ import android.view.View
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import com.andy.kotlinandroid.BaseActivity
+import com.andy.kotlin.gank.R
 import kotlinx.android.synthetic.main.activity_web_brower.*
 
 
@@ -31,7 +31,6 @@ class WebBrowserActivity : BaseActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
 
-        mWebView.settings.javaScriptEnabled = true
         mWebView.setWebViewClient(WebViewClient())
         mWebView.setWebChromeClient(object : WebChromeClient() {
             override fun onProgressChanged(view: WebView?, newProgress: Int) {

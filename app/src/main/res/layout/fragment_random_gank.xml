@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.andy.kotlin.gank.MainActivity">
+    tools:context="com.andy.kotlin.gank.activity.MainActivity">
 
     <com.andy.kotlin.gank.widget.RefreshLayout
         android:id="@+id/mSwipeRefreshLayout"

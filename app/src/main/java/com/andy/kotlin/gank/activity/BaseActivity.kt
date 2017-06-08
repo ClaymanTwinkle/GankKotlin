@@ -1,4 +1,4 @@
-package com.andy.kotlinandroid
+package com.andy.kotlin.gank.activity
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
