@@ -19,6 +19,7 @@ import com.andy.kotlin.gank.event.ApiEvent
 import com.andy.kotlin.gank.model.GankModel
 import com.andy.kotlin.gank.net.ApiResponse
 import com.andy.kotlin.gank.util.DensityUtils
+import com.andy.kotlin.gank.util.LoggerRequestListener
 import com.andy.kotlin.gank.util.ToastUtils
 import com.andy.kotlinandroid.net.ApiClient
 import com.bumptech.glide.Glide
@@ -88,7 +89,7 @@ class GankRandomFragment : BaseFragment() {
     }
 
     private fun loadRandomDataList() {
-        addSubscription(ApiClient.retrofit().loadRandomData("Android", 20))
+        addSubscription(ApiClient.retrofit().loadRandomData("all", 20))
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -128,6 +129,7 @@ class GankRandomFragment : BaseFragment() {
                 ivPic.visibility = View.VISIBLE
                 Glide.with(context)
                         .load(data.images[0])
+                        .listener(LoggerRequestListener())
                         .centerCrop()
                         .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                         .into(ivPic)

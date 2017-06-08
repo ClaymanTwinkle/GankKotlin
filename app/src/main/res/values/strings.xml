@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">GankKotlin</string>
+    <string name="app_name">Gank</string>
     <string name="server_error">服务器异常</string>
 </resources>
