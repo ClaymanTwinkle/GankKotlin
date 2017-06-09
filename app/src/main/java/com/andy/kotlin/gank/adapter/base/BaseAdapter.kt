@@ -1,4 +1,4 @@
-package com.andy.kotlin.gank.adapter
+package com.andy.kotlin.gank.adapter.base
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView

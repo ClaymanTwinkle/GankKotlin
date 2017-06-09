@@ -1,6 +1,5 @@
 package com.andy.kotlin.gank.fragment
 
-import android.content.Context
 import android.graphics.Rect
 import android.os.Bundle
 import android.support.v7.widget.DividerItemDecoration
@@ -12,9 +11,8 @@ import android.view.View
 import android.view.ViewGroup
 import com.andy.kotlin.gank.R
 import com.andy.kotlin.gank.activity.WebBrowserActivity
-import com.andy.kotlin.gank.adapter.BaseAdapter
-import com.andy.kotlin.gank.adapter.BaseViewHolder
-import com.andy.kotlin.gank.adapter.ListBaseAdapter
+import com.andy.kotlin.gank.adapter.base.BaseAdapter
+import com.andy.kotlin.gank.adapter.CommonAdapter
 import com.andy.kotlin.gank.event.ApiEvent
 import com.andy.kotlin.gank.model.GankModel
 import com.andy.kotlin.gank.net.ApiResponse
@@ -25,7 +23,7 @@ import com.andy.kotlinandroid.net.ApiClient
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import kotlinx.android.synthetic.main.fragment_random_gank.*
-import kotlinx.android.synthetic.main.list_item_gank.view.*
+import kotlinx.android.synthetic.main.list_item_gank.*
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
@@ -111,19 +109,9 @@ class GankRandomFragment : BaseFragment() {
         return true
     }
 
-    private inner class LinearAdapter : ListBaseAdapter<GankModel, ViewHolder>() {
-        override fun onBindViewHolder(holder: ViewHolder, data: GankModel, position: Int) {
-            holder.bindView(data, position)
-        }
-
-        override fun onCreateViewHolder(parent: ViewGroup, context: Context, viewType: Int): ViewHolder {
-            return ViewHolder(LayoutInflater.from(context).inflate(R.layout.list_item_gank, parent, false))
-        }
-    }
-
-    private inner class ViewHolder(itemView: View) : BaseViewHolder<GankModel>(itemView) {
-        override fun bindView(data: GankModel, position: Int) = with(itemView) {
-            if (data.images == null || data.images.isEmpty()) {
+    private inner class LinearAdapter : CommonAdapter<GankModel>(R.layout.list_item_gank) {
+        override fun bindView(data: GankModel?, position: Int) {
+            if (data!!.images == null || data.images!!.isEmpty()) {
                 ivPic.visibility = View.GONE
             } else {
                 ivPic.visibility = View.VISIBLE

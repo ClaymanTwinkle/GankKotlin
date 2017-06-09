@@ -8,6 +8,6 @@ package com.andy.kotlin.gank
  */
 interface Constant {
     companion object {
-        val ALL_GANK_TYPE = arrayOf("福利", "Android", "iOS", "休息视频", "拓展资源", "前端")
+        val ALL_GANK_TYPE = arrayOf("福利", "Android", "iOS", "休息视频", "拓展资源", "前端", "瞎推荐", "App")
     }
 }

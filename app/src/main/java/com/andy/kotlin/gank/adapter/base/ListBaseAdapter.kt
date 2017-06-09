@@ -1,16 +1,13 @@
-package com.andy.kotlin.gank.adapter
-
-import android.support.v7.widget.RecyclerView
-import java.util.*
+package com.andy.kotlin.gank.adapter.base
 
 /**
  * ListLazyAdapter
  * @author andyqtchen <br></br>
  * *         创建日期：2017/6/5 16:31
  */
-abstract class ListBaseAdapter<T, VH : RecyclerView.ViewHolder> : BaseAdapter<VH>() {
+abstract class ListBaseAdapter<T, VH : android.support.v7.widget.RecyclerView.ViewHolder> : BaseAdapter<VH>() {
 
-    private val mData = ArrayList<T>()
+    private val mData = java.util.ArrayList<T>()
 
     abstract fun onBindViewHolder(holder: VH, data: T, position: Int)
 

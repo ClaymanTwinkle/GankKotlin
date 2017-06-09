@@ -7,9 +7,8 @@ import retrofit2.http.Path
 import rx.Observable
 
 /**
- * todo 类名
+ * ApiStores
  * @author andyqtchen <br/>
- * todo 实现的主要功能。
  * 创建日期：2017/6/5 11:20
  */
 interface ApiStores {

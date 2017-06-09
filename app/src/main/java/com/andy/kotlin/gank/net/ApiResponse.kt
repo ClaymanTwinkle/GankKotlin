@@ -8,13 +8,12 @@ package com.andy.kotlin.gank.net
  * *         创建日期：2017/6/5 13:27
  */
 class ApiResponse<T> {
+    var category: List<String>? = null
     var isError: Boolean = false
     var results: List<T>? = null
 
     override fun toString(): String {
-        return "ApiResponse{" +
-                "error=" + isError +
-                ", results=" + results +
-                '}'
+        return "ApiResponse(category=$category, isError=$isError, results=$results)"
     }
+
 }
