@@ -6,7 +6,7 @@ package com.andy.kotlin.gank.event
  *          Api返回事件
  *          创建日期：2017/6/7 16:14
  */
-class ApiEvent<T> {
+open class ApiEvent<T> {
     var isSuccess: Boolean = false
     var errorCode: Int = 0
     var errorMsg: String? = null

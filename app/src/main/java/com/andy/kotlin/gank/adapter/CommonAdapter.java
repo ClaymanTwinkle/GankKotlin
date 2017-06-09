@@ -47,9 +47,9 @@ public abstract class CommonAdapter<T> extends ListBaseAdapter<T, CommonAdapter.
 
         @Override
         public void bindView(T data, int position) {
-            CommonAdapter.this.bindView(data, position);
+            CommonAdapter.this.bindView(itemView, data, position);
         }
     }
 
-    protected abstract void bindView(T data, int position);
+    protected abstract void bindView(View itemView, T data, int position);
 }

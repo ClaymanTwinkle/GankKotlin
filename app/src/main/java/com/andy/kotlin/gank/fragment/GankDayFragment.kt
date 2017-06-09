@@ -4,8 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-
 import com.andy.kotlin.gank.R
+import com.andy.kotlin.gank.event.ApiEvent
+import com.andy.kotlin.gank.model.GankModel
+import com.andy.kotlin.gank.net.ApiResponse
+import com.andy.kotlinandroid.net.ApiClient
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 /**
  * GankDayFragment
@@ -16,7 +21,7 @@ import com.andy.kotlin.gank.R
  */
 class GankDayFragment : BaseFragment() {
     override fun isRegisterDispatcher(): Boolean {
-        return false
+        return true
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -29,8 +34,15 @@ class GankDayFragment : BaseFragment() {
     }
 
     private fun init() {
-
+        loadDateData()
     }
 
+    private fun loadDateData() {
+        addSubscription(ApiClient.retrofit().loadDateData(2017,5,18))
+    }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onResponse(event: ApiEvent<ApiResponse<HashMap<String,List<GankModel>>>>) {
+        System.err.println(event)
+    }
 }

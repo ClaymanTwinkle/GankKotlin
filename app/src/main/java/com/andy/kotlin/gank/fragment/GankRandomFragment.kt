@@ -11,8 +11,8 @@ import android.view.View
 import android.view.ViewGroup
 import com.andy.kotlin.gank.R
 import com.andy.kotlin.gank.activity.WebBrowserActivity
-import com.andy.kotlin.gank.adapter.base.BaseAdapter
 import com.andy.kotlin.gank.adapter.CommonAdapter
+import com.andy.kotlin.gank.adapter.base.BaseAdapter
 import com.andy.kotlin.gank.event.ApiEvent
 import com.andy.kotlin.gank.model.GankModel
 import com.andy.kotlin.gank.net.ApiResponse
@@ -23,7 +23,7 @@ import com.andy.kotlinandroid.net.ApiClient
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import kotlinx.android.synthetic.main.fragment_random_gank.*
-import kotlinx.android.synthetic.main.list_item_gank.*
+import kotlinx.android.synthetic.main.list_item_gank.view.*
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
@@ -36,7 +36,7 @@ import org.greenrobot.eventbus.ThreadMode
  */
 class GankRandomFragment : BaseFragment() {
 
-    private val mAdapter = LinearAdapter()
+    private var mAdapter: LinearAdapter? = null
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater?.inflate(R.layout.fragment_random_gank, container, false)
@@ -60,6 +60,7 @@ class GankRandomFragment : BaseFragment() {
             }
         })
 
+        mAdapter = LinearAdapter()
         mRecyclerView.adapter = mAdapter
         mRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView?, newState: Int) {
@@ -75,9 +76,9 @@ class GankRandomFragment : BaseFragment() {
             loadRandomDataList()
         }
 
-        mAdapter.setOnItemClickListener(object : BaseAdapter.OnItemClickListener {
+        mAdapter!!.setOnItemClickListener(object : BaseAdapter.OnItemClickListener {
             override fun onItemClick(position: Int, view: View) {
-                val model = mAdapter.getItem(position)
+                val model = mAdapter!!.getItem(position)
                 WebBrowserActivity.startActivity(this@GankRandomFragment, model.desc, model.url)
             }
         })
@@ -99,7 +100,7 @@ class GankRandomFragment : BaseFragment() {
                 ToastUtils.toast(context, R.string.server_error)
                 return
             }
-            mAdapter.setAllItemsAndRefresh(event.body?.results!!)
+            mAdapter!!.setAllItemsAndRefresh(event.body?.results!!)
         } else {
             ToastUtils.toast(context, event.errorMsg)
         }
@@ -110,7 +111,7 @@ class GankRandomFragment : BaseFragment() {
     }
 
     private inner class LinearAdapter : CommonAdapter<GankModel>(R.layout.list_item_gank) {
-        override fun bindView(data: GankModel?, position: Int) {
+        override fun bindView(itemView: View, data: GankModel?, position: Int) = with(itemView) {
             if (data!!.images == null || data.images!!.isEmpty()) {
                 ivPic.visibility = View.GONE
             } else {
