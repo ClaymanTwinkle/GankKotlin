@@ -28,7 +28,7 @@ class MainActivity : BaseActivity() {
     }
 
     private inner class MainFragmentPagerAdapter(fm: FragmentManager?) : FragmentPagerAdapter(fm) {
-        val pageTitleList = arrayOf("每天", "随机")
+        val pageTitleList = arrayOf("精品", "随机")
         val fragmentList = arrayOfNulls<Fragment>(pageTitleList.size)
 
         override fun getItem(position: Int): Fragment {

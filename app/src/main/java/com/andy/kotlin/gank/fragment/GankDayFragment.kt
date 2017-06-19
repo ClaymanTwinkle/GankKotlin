@@ -63,6 +63,11 @@ class GankDayFragment : BaseFragment() {
             true
         }
 
+        mSwipeRefreshLayout.setOnRefreshListener {
+            loadDateData()
+        }
+
+        mSwipeRefreshLayout.isRefreshing = true
         loadDateData()
     }
 
@@ -99,6 +104,7 @@ class GankDayFragment : BaseFragment() {
             }
 
             override fun onFinish() {
+                mSwipeRefreshLayout.isRefreshing = false
             }
         })
     }
