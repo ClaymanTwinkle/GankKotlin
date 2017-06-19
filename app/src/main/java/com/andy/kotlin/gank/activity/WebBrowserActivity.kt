@@ -13,6 +13,8 @@ import com.andy.kotlin.gank.R
 import kotlinx.android.synthetic.main.activity_web_brower.*
 
 
+
+
 class WebBrowserActivity : BaseActivity() {
 
     var mUrl: String = ""
@@ -30,7 +32,6 @@ class WebBrowserActivity : BaseActivity() {
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-
         mWebView.setWebViewClient(WebViewClient())
         mWebView.setWebChromeClient(object : WebChromeClient() {
             override fun onProgressChanged(view: WebView?, newProgress: Int) {
@@ -45,6 +46,9 @@ class WebBrowserActivity : BaseActivity() {
                 }
             }
         })
+
+        mWebView.settings.useWideViewPort = true
+        mWebView.settings.loadWithOverviewMode = true
         mWebView.loadUrl(mUrl)
     }
 
