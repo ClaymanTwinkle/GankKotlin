@@ -2,7 +2,7 @@
 kotlin实现的一个简易的gank app
 
 # 数据来源
-[Gank API](gank.io/api)
+[Gank API](http://gank.io/api)
 
 # 用到的开源
 [retrofit2](https://github.com/square/retrofit)
