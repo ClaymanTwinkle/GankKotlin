@@ -4,6 +4,8 @@ import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.ImageView
 import com.andy.kotlin.gank.R
@@ -19,6 +21,8 @@ import com.andy.kotlinandroid.net.ApiCallBack
 import com.andy.kotlinandroid.net.ApiClient
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.jude.rollviewpager.RollPagerView
+import com.jude.rollviewpager.adapter.LoopPagerAdapter
 import kotlinx.android.synthetic.main.fragment_day_gank.*
 import kotlinx.android.synthetic.main.list_item_content_gank_list.view.*
 import kotlinx.android.synthetic.main.list_item_title_gank_list.view.*
@@ -66,7 +70,7 @@ class GankDayFragment : BaseFragment() {
 
         addSubscription(ApiClient.retrofit().loadAllHistoryDayList().flatMap { apiResponse ->
             var today = Date()
-            if(!apiResponse?.isError!!) {
+            if (!apiResponse?.isError!!) {
                 val theNewTimeStr = apiResponse.results?.first()
                 today = DateUtil.parse(theNewTimeStr, "yyyy-MM-dd")
             }
@@ -90,6 +94,7 @@ class GankDayFragment : BaseFragment() {
             }
 
             override fun onFailure(code: Int, msg: String?) {
+                mHeaderViewPresenter?.hideHeader()
                 ToastUtils.toast(context, msg)
             }
 
@@ -98,30 +103,71 @@ class GankDayFragment : BaseFragment() {
         })
     }
 
+    /**
+     * 用于处理Header View的Presenter
+     */
     inner class HeaderViewPresenter {
         private var mPicKey: String = "福利"
-        private var mHeaderView: View? = null
+        private var mHeaderView: RollPagerView? = null
+        private var mRollPagerAdapter: RollPagerAdapter? = null
 
         init {
-            mHeaderView = View.inflate(context, R.layout.list_item_header_pic_bg, null)
+            mHeaderView = LayoutInflater.from(context).inflate(R.layout.list_item_header_pic_bg, mExListView, false) as RollPagerView
+            mRollPagerAdapter = RollPagerAdapter(mHeaderView!!)
+            mHeaderView?.setOnItemClickListener { position: Int ->
+                val data = mRollPagerAdapter!!.getData(position)
+                WebBrowserActivity.startActivity(this@GankDayFragment, data.desc, data.url)
+            }
         }
 
         fun setData(data: HashMap<String, List<GankModel>>) {
             val gank = data[mPicKey]
-            if(gank != null && !gank.isEmpty()) {
-                Glide.with(this@GankDayFragment)
-                        .load(gank.first().url)
-                        .into(mHeaderView as ImageView)
+            if (gank != null && gank.isNotEmpty()) {
+                mRollPagerAdapter?.setData(gank)
+                mHeaderView?.setAdapter(mRollPagerAdapter)
+                mHeaderView?.visibility = VISIBLE
                 mExListView.addHeaderView(mHeaderView)
             }
         }
 
-        fun clearData() {
-            mExListView.removeHeaderView(mHeaderView)
+        fun hideHeader() {
+            mHeaderView?.visibility = GONE
         }
     }
 
-    class GankDayAdapter(context:Context) : BaseExpandableListAdapter() {
+    /**
+     * 轮播view pager的适配器
+     */
+    class RollPagerAdapter(viewPager: RollPagerView) : LoopPagerAdapter(viewPager) {
+        private val mDataList = ArrayList<GankModel>()
+
+        fun setData(dataList: List<GankModel>) {
+            mDataList.clear()
+            mDataList.addAll(dataList)
+        }
+
+        override fun getView(container: ViewGroup?, position: Int): View {
+            val view = ImageView(container?.context)
+            view.scaleType = ImageView.ScaleType.CENTER_CROP
+            view.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+
+            Glide.with(container?.context)
+                    .load(mDataList[position].url)
+                    .centerCrop()
+                    .into(view)
+
+            return view
+        }
+
+        override fun getRealCount(): Int = mDataList.size
+
+        fun getData(position: Int): GankModel = mDataList[position]
+    }
+
+    /**
+     * 列表的适配器
+     */
+    class GankDayAdapter(context: Context) : BaseExpandableListAdapter() {
         private var mDataList = HashMap<String, List<GankModel>>()
         private var mGroupList = ArrayList<String>()
         private var mInflater: LayoutInflater? = null
