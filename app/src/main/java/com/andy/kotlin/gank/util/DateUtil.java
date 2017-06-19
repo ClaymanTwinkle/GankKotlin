@@ -13,7 +13,7 @@ import java.util.Date;
  */
 public final class DateUtil {
 
-    public static Date parse(String time , String formatString){
+    public static Date parse(String time, String formatString) {
         SimpleDateFormat sdf = new SimpleDateFormat(formatString);
 
         try {

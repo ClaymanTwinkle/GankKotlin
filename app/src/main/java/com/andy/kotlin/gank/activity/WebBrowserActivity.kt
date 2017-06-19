@@ -13,8 +13,6 @@ import com.andy.kotlin.gank.R
 import kotlinx.android.synthetic.main.activity_web_brower.*
 
 
-
-
 class WebBrowserActivity : BaseActivity() {
 
     var mUrl: String = ""
