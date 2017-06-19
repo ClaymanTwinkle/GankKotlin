@@ -1,9 +1,6 @@
 package com.andy.kotlin.gank.fragment
 
-import android.os.Bundle
 import android.support.v4.app.Fragment
-import com.andy.kotlin.gank.net.ApiEventCallBack
-import com.andy.kotlin.gank.util.Dispatcher
 import rx.Observable
 import rx.Subscriber
 import rx.android.schedulers.AndroidSchedulers
@@ -19,20 +16,12 @@ import rx.subscriptions.CompositeSubscription
 abstract class BaseFragment : Fragment() {
     val mCompositeSubscription: CompositeSubscription = CompositeSubscription()
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        if (isRegisterDispatcher()) {
-            Dispatcher.register(this)
-        }
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         if (mCompositeSubscription.hasSubscriptions()) {
             // 取消注册
             mCompositeSubscription.unsubscribe()
         }
-        Dispatcher.unRegister(this)
     }
 
     open fun <M> addSubscription(observable: Observable<M>, subscriber: Subscriber<M>) {
@@ -42,14 +31,4 @@ abstract class BaseFragment : Fragment() {
                         .subscribe(subscriber)
         )
     }
-
-    open fun <M> addSubscription(observable: Observable<M>) {
-        mCompositeSubscription.add(
-                observable.subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(ApiEventCallBack<M>())
-        )
-    }
-
-    abstract fun isRegisterDispatcher(): Boolean
 }

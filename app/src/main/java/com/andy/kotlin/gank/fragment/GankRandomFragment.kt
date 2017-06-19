@@ -19,6 +19,7 @@ import com.andy.kotlin.gank.net.ApiResponse
 import com.andy.kotlin.gank.util.DensityUtils
 import com.andy.kotlin.gank.util.LoggerRequestListener
 import com.andy.kotlin.gank.util.ToastUtils
+import com.andy.kotlinandroid.net.ApiCallBack
 import com.andy.kotlinandroid.net.ApiClient
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -88,26 +89,26 @@ class GankRandomFragment : BaseFragment() {
     }
 
     private fun loadRandomDataList() {
-        addSubscription(ApiClient.retrofit().loadRandomData("all", 20))
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onResponse(event: ApiEvent<ApiResponse<GankModel>>) {
-        mSwipeRefreshLayout.isRefreshing = false
-
-        if (event.isSuccess) {
-            if (event.body?.isError!!) {
-                ToastUtils.toast(context, R.string.server_error)
-                return
+        addSubscription(ApiClient.retrofit().loadRandomData("all", 20), object : ApiCallBack<ApiResponse<List<GankModel>>>(){
+            override fun onFailure(code: Int, msg: String?) {
+                ToastUtils.toast(context, msg)
             }
-            mAdapter!!.setAllItemsAndRefresh(event.body?.results!!)
-        } else {
-            ToastUtils.toast(context, event.errorMsg)
-        }
-    }
 
-    override fun isRegisterDispatcher(): Boolean {
-        return true
+            override fun onFinish() {
+                mSwipeRefreshLayout.isRefreshing = false
+            }
+
+            override fun onSuccess(model: ApiResponse<List<GankModel>>) {
+                if (model.isError) {
+                        ToastUtils.toast(context, R.string.server_error)
+                } else {
+                    if(model.results == null){
+                        return
+                    }
+                    mAdapter!!.setAllItemsAndRefresh(model.results!!)
+                }
+            }
+        })
     }
 
     private inner class LinearAdapter : CommonAdapter<GankModel>(R.layout.list_item_gank) {

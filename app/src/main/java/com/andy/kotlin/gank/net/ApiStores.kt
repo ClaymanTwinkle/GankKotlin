@@ -18,7 +18,7 @@ interface ApiStores {
 
     // 随机数据
     @GET("random/data/{type}/{count}")
-    fun loadRandomData(@Path("type") type: String, @Path("count") count: Int): Observable<ApiResponse<GankModel>>
+    fun loadRandomData(@Path("type") type: String, @Path("count") count: Int): Observable<ApiResponse<List<GankModel>>>
 
     @GET("day/{year}/{month}/{day}")
     fun loadDateData(@Path("year") year:Int, @Path("month") month:Int, @Path("day") day:Int): Observable<ApiResponse<HashMap<String,List<GankModel>>>>

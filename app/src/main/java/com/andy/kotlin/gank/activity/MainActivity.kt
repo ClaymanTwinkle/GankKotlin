@@ -12,7 +12,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : BaseActivity() {
 
-    private var mPagerAdapter:FragmentPagerAdapter? = null
+    private var mPagerAdapter: FragmentPagerAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,21 +27,16 @@ class MainActivity : BaseActivity() {
         mTabLayout.setupWithViewPager(mViewPager)
     }
 
-    override fun isRegisterDispatcher(): Boolean {
-        return false
-    }
-
-
     private inner class MainFragmentPagerAdapter(fm: FragmentManager?) : FragmentPagerAdapter(fm) {
-        val pageTitleList = arrayOf("随机", "每天")
+        val pageTitleList = arrayOf("每天", "随机")
         val fragmentList = arrayOfNulls<Fragment>(pageTitleList.size)
 
         override fun getItem(position: Int): Fragment {
             var fragment = fragmentList[position]
             if (fragment == null) {
                 when (position) {
-                    0 -> fragmentList[position] = GankRandomFragment()
-                    1 -> fragmentList[position] = GankDayFragment()
+                    0 -> fragmentList[position] = GankDayFragment()
+                    1 -> fragmentList[position] = GankRandomFragment()
                 }
                 fragment = fragmentList[position]
             }

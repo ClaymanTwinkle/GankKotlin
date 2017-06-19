@@ -58,10 +58,6 @@ class WebBrowserActivity : BaseActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    override fun isRegisterDispatcher(): Boolean {
-        return false
-    }
-
     companion object {
         var EXTRA_URL = "url"
         var EXTRA_TITLE = "title"

@@ -10,7 +10,7 @@ package com.andy.kotlin.gank.net
 class ApiResponse<T> {
     var category: List<String>? = null
     var isError: Boolean = false
-    var results: List<T>? = null
+    var results: T? = null
 
     override fun toString(): String {
         return "ApiResponse(category=$category, isError=$isError, results=$results)"

@@ -24,6 +24,7 @@ abstract class ApiCallBack<M> : Subscriber<M>() {
     }
 
     override fun onError(e: Throwable?) {
+        GLog.e(e)
         if (e is HttpException) {
             val httpException = e
             val code = httpException.code()
