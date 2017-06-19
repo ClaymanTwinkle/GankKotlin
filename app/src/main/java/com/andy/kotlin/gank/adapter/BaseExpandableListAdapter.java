@@ -2,10 +2,9 @@ package com.andy.kotlin.gank.adapter;
 
 
 /**
- * todo 类名
+ * BaseExpandableListAdapter
  *
  * @author andyqtchen <br/>
- *         todo 实现的主要功能。
  *         创建日期：2017/6/19 11:12
  */
 public abstract class BaseExpandableListAdapter extends android.widget.BaseExpandableListAdapter {

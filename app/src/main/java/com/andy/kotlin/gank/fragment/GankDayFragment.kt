@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import com.andy.kotlin.gank.R
 import com.andy.kotlin.gank.activity.WebBrowserActivity
 import com.andy.kotlin.gank.adapter.BaseExpandableListAdapter
@@ -33,6 +34,7 @@ import kotlin.collections.ArrayList
 class GankDayFragment : BaseFragment() {
 
     private var mAdapter: GankDayAdapter? = null
+    private var mHeaderViewPresenter: HeaderViewPresenter? = null
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater!!.inflate(R.layout.fragment_day_gank, container, false)
@@ -44,7 +46,9 @@ class GankDayFragment : BaseFragment() {
     }
 
     private fun init() {
-        mAdapter = GankDayAdapter()
+        mHeaderViewPresenter = HeaderViewPresenter()
+
+        mAdapter = GankDayAdapter(context)
         mExListView.setAdapter(mAdapter)
         mExListView.setOnGroupClickListener { parent, v, groupPosition, id -> true }
         mExListView.setOnChildClickListener { parent, v, groupPosition, childPosition, id ->
@@ -52,6 +56,7 @@ class GankDayFragment : BaseFragment() {
             WebBrowserActivity.startActivity(this@GankDayFragment, data.desc, data.url)
             true
         }
+
         loadDateData()
     }
 
@@ -63,7 +68,8 @@ class GankDayFragment : BaseFragment() {
                 } else {
                     GLog.d(model.results.toString())
                     mAdapter!!.setData(model.results!!)
-                    for (i in mAdapter!!.getGroupList().indices){
+                    mHeaderViewPresenter?.setData(model.results!!)
+                    for (i in mAdapter!!.getGroupList().indices) {
                         mExListView.expandGroup(i)
                     }
                 }
@@ -78,7 +84,30 @@ class GankDayFragment : BaseFragment() {
         })
     }
 
-    inner class GankDayAdapter : BaseExpandableListAdapter() {
+    inner class HeaderViewPresenter {
+        private var mPicKey: String = "福利"
+        private var mHeaderView: View? = null
+
+        init {
+            mHeaderView = View.inflate(context, R.layout.list_item_header_pic_bg, null)
+        }
+
+        fun setData(data: HashMap<String, List<GankModel>>) {
+            val gank = data[mPicKey]
+            if(gank != null && !gank.isEmpty()) {
+                Glide.with(this@GankDayFragment)
+                        .load(gank.first().url)
+                        .into(mHeaderView as ImageView)
+                mExListView.addHeaderView(mHeaderView)
+            }
+        }
+
+        fun clearData() {
+            mExListView.removeHeaderView(mHeaderView)
+        }
+    }
+
+    class GankDayAdapter(context:Context) : BaseExpandableListAdapter() {
         private var mDataList = HashMap<String, List<GankModel>>()
         private var mGroupList = ArrayList<String>()
         private var mInflater: LayoutInflater? = null
@@ -93,7 +122,7 @@ class GankDayFragment : BaseFragment() {
             mGroupList.addAll(this.mDataList.keys)
         }
 
-        fun getGroupList():ArrayList<String> {
+        fun getGroupList(): ArrayList<String> {
             return mGroupList
         }
 
@@ -124,7 +153,7 @@ class GankDayFragment : BaseFragment() {
             return groupView
         }
 
-        fun bindGroupView(group:String,groupView:View) = with(groupView){
+        fun bindGroupView(group: String, groupView: View) = with(groupView) {
             tvGroupTitle.text = group
         }
 
@@ -142,7 +171,7 @@ class GankDayFragment : BaseFragment() {
             return childView
         }
 
-        fun bindChildView(child:GankModel, childView:View) = with(childView){
+        fun bindChildView(child: GankModel, childView: View) = with(childView) {
             if (child.images == null || child.images.isEmpty()) {
                 ivPic.visibility = View.GONE
             } else {
@@ -158,6 +187,5 @@ class GankDayFragment : BaseFragment() {
             tvTime.text = child.createdAt
             tvType.text = child.type
         }
-
     }
 }
