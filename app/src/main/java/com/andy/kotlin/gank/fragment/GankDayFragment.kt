@@ -11,6 +11,7 @@ import com.andy.kotlin.gank.activity.WebBrowserActivity
 import com.andy.kotlin.gank.adapter.BaseExpandableListAdapter
 import com.andy.kotlin.gank.model.GankModel
 import com.andy.kotlin.gank.net.ApiResponse
+import com.andy.kotlin.gank.util.DateUtil
 import com.andy.kotlin.gank.util.GLog
 import com.andy.kotlin.gank.util.LoggerRequestListener
 import com.andy.kotlin.gank.util.ToastUtils
@@ -23,6 +24,7 @@ import kotlinx.android.synthetic.main.list_item_content_gank_list.view.*
 import kotlinx.android.synthetic.main.list_item_title_gank_list.view.*
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 /**
  * GankDayFragment
@@ -61,7 +63,19 @@ class GankDayFragment : BaseFragment() {
     }
 
     private fun loadDateData() {
-        addSubscription(ApiClient.retrofit().loadDateData(2015, 8, 7), object : ApiCallBack<ApiResponse<HashMap<String, List<GankModel>>>>() {
+
+        addSubscription(ApiClient.retrofit().loadAllHistoryDayList().flatMap { apiResponse ->
+            var today = Date()
+            if(!apiResponse?.isError!!) {
+                val theNewTimeStr = apiResponse.results?.first()
+                today = DateUtil.parse(theNewTimeStr, "yyyy-MM-dd")
+            }
+            val year = DateUtil.getYear(today)
+            val month = DateUtil.getMonth(today)
+            val day = DateUtil.getDay(today)
+            ApiClient.retrofit().loadDateData(year, month, day)
+
+        }, object : ApiCallBack<ApiResponse<HashMap<String, List<GankModel>>>>() {
             override fun onSuccess(model: ApiResponse<HashMap<String, List<GankModel>>>) {
                 if (model.isError) {
                     ToastUtils.toast(context, R.string.server_error)

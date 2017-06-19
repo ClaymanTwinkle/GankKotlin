@@ -20,6 +20,11 @@ interface ApiStores {
     @GET("random/data/{type}/{count}")
     fun loadRandomData(@Path("type") type: String, @Path("count") count: Int): Observable<ApiResponse<List<GankModel>>>
 
+    // 某一天的数据
     @GET("day/{year}/{month}/{day}")
     fun loadDateData(@Path("year") year:Int, @Path("month") month:Int, @Path("day") day:Int): Observable<ApiResponse<HashMap<String,List<GankModel>>>>
+
+    // 获取所有历史日期
+    @GET("day/history")
+    fun loadAllHistoryDayList(): Observable<ApiResponse<List<String>>>
 }
