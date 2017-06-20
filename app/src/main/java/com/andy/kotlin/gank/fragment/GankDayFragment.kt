@@ -132,7 +132,9 @@ class GankDayFragment : BaseFragment() {
                 mRollPagerAdapter?.setData(gank)
                 mHeaderView?.setAdapter(mRollPagerAdapter)
                 mHeaderView?.visibility = VISIBLE
-                mExListView.addHeaderView(mHeaderView)
+                if (mExListView.headerViewsCount == 0) {
+                    mExListView.addHeaderView(mHeaderView)
+                }
             }
         }
 
