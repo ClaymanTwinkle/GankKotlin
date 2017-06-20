@@ -190,25 +190,15 @@ class GankDayFragment : BaseFragment() {
             mGroupList.addAll(this.mDataList.keys)
         }
 
-        fun getGroupList(): ArrayList<String> {
-            return mGroupList
-        }
+        fun getGroupList(): ArrayList<String> = mGroupList
 
-        override fun getGroup(groupPosition: Int): Any {
-            return mGroupList[groupPosition]
-        }
+        override fun getGroup(groupPosition: Int): Any = mGroupList[groupPosition]
 
-        override fun getGroupCount(): Int {
-            return mGroupList.size
-        }
+        override fun getGroupCount(): Int = mGroupList.size
 
-        override fun getChildrenCount(groupPosition: Int): Int {
-            return mDataList[mGroupList[groupPosition]]?.size!!
-        }
+        override fun getChildrenCount(groupPosition: Int): Int = mDataList[mGroupList[groupPosition]]!!.size
 
-        override fun getChild(groupPosition: Int, childPosition: Int): GankModel? {
-            return mDataList[mGroupList[groupPosition]]?.get(childPosition)
-        }
+        override fun getChild(groupPosition: Int, childPosition: Int): GankModel? = mDataList[mGroupList[groupPosition]]?.get(childPosition)
 
         override fun getGroupView(groupPosition: Int, isExpanded: Boolean, convertView: View?, parent: ViewGroup?): View {
             var groupView = convertView
