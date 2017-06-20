@@ -33,11 +33,12 @@ class MainActivity : BaseActivity() {
         override fun getItem(position: Int): Fragment {
             var fragment = fragmentList[position]
             if (fragment == null) {
-                when (position) {
-                    0 -> fragmentList[position] = GankDayFragment()
-                    1 -> fragmentList[position] = GankRandomFragment()
+                fragment = when (position) {
+                    0 -> GankDayFragment()
+                    1 -> GankRandomFragment()
+                    else -> null
                 }
-                fragment = fragmentList[position]
+                fragmentList[position] = fragment
             }
             return fragment!!
         }
