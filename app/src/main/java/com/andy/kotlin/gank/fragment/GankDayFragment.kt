@@ -42,13 +42,14 @@ class GankDayFragment : BaseFragment() {
     private var mAdapter: GankDayAdapter? = null
     private var mHeaderViewPresenter: HeaderViewPresenter? = null
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater!!.inflate(R.layout.fragment_day_gank, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.fragment_day_gank, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         init()
+        loadDateData()
     }
 
     private fun init() {
@@ -68,7 +69,6 @@ class GankDayFragment : BaseFragment() {
         }
 
         mSwipeRefreshLayout.isRefreshing = true
-        loadDateData()
     }
 
     private fun loadDateData() {
