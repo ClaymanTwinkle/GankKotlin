@@ -15,13 +15,9 @@ abstract class ListBaseAdapter<T, VH : android.support.v7.widget.RecyclerView.Vi
         onBindViewHolder(holder, mData[position], position)
     }
 
-    override fun getItemCount(): Int {
-        return mData.size
-    }
+    override fun getItemCount(): Int = mData.size
 
-    fun getItem(index: Int): T {
-        return mData[index]
-    }
+    fun getItem(index: Int): T = mData[index]
 
     fun removeItem(index: Int) {
         this.mData.removeAt(index)
