@@ -75,7 +75,7 @@ class GankDayFragment : BaseFragment() {
 
         addSubscription(ApiClient.retrofit().loadAllHistoryDayList().flatMap { apiResponse ->
             var today = Date()
-            if (!apiResponse?.isError!!) {
+            if (!apiResponse!!.isError) {
                 val theNewTimeStr = apiResponse.results?.first()
                 today = DateUtil.parse(theNewTimeStr, "yyyy-MM-dd")
             }
