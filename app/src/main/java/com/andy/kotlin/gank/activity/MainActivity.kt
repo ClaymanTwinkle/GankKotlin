@@ -26,7 +26,7 @@ class MainActivity : BaseActivity() {
         mTabLayout.setupWithViewPager(mViewPager)
     }
 
-    private inner class MainFragmentPagerAdapter(fm: FragmentManager?) : FragmentPagerAdapter(fm) {
+    private class MainFragmentPagerAdapter(fm: FragmentManager?) : FragmentPagerAdapter(fm) {
         val pageTitleList = arrayOf("精品", "随机")
         val fragmentList = arrayOfNulls<Fragment>(pageTitleList.size)
 
