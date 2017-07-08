@@ -119,11 +119,13 @@ class GankDayFragment : BaseFragment() {
 
         init {
             mHeaderView = LayoutInflater.from(context).inflate(R.layout.list_item_header_pic_bg, mExListView, false) as RollPagerView
+            mHeaderView?.visibility = GONE
             mRollPagerAdapter = RollPagerAdapter(mHeaderView!!)
             mHeaderView?.setOnItemClickListener { position: Int ->
                 val data = mRollPagerAdapter!!.getData(position)
                 WebBrowserActivity.startActivity(this@GankDayFragment, data.desc, data.url)
             }
+            mExListView.addHeaderView(mHeaderView)
         }
 
         fun setData(data: HashMap<String, List<GankModel>>) {
@@ -132,9 +134,6 @@ class GankDayFragment : BaseFragment() {
                 mRollPagerAdapter?.setData(gank)
                 mHeaderView?.setAdapter(mRollPagerAdapter)
                 mHeaderView?.visibility = VISIBLE
-                if (mExListView.headerViewsCount == 0) {
-                    mExListView.addHeaderView(mHeaderView)
-                }
             }
         }
 
