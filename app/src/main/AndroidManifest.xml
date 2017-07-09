@@ -13,19 +13,21 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.MainActivity">
+        <activity
+            android:name=".activity.SplashActivity"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".activity.WebBrowserActivity">
-        </activity>
-        <activity android:name=".activity.GankDayActivity">
-        </activity>
-        <activity android:name=".activity.LookPictureActivity">
-        </activity>
+        <activity android:name=".activity.WebBrowserActivity"/>
+        <activity android:name=".activity.GankDayActivity"/>
+        <activity android:name=".activity.LookPictureActivity"/>
+        <activity
+            android:name=".activity.MainActivity"
+            />
     </application>
 
 </manifest>

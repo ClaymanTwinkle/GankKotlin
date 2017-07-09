@@ -1,13 +1,15 @@
 package com.andy.kotlin.gank.activity
 
+import android.app.Activity
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
 import com.andy.kotlin.gank.R
-import com.andy.kotlin.gank.fragment.GankHomeFragment
 import com.andy.kotlin.gank.fragment.GankHistoryFragment
+import com.andy.kotlin.gank.fragment.GankHomeFragment
 import com.andy.kotlin.gank.fragment.GankMeiziFragment
+import com.andy.kotlin.gank.util.ActivityUtil
 import kotlinx.android.synthetic.main.activity_main.*
 
 
@@ -49,5 +51,11 @@ class MainActivity : BaseActivity() {
         override fun getCount(): Int = fragmentList.size
 
         override fun getPageTitle(position: Int): CharSequence = pageTitleList[position]
+    }
+
+    companion object {
+        fun startActivity(aty: Activity) {
+            ActivityUtil.startActivity(aty, MainActivity::class.java)
+        }
     }
 }
