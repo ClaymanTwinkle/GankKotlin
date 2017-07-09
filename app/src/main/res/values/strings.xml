@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">gank.io</string>
     <string name="server_error">服务器异常</string>
+    <string name="press_the_exit_application_again">再按一次退出应用</string>
 </resources>

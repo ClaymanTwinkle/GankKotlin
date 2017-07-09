@@ -10,11 +10,14 @@ import com.andy.kotlin.gank.fragment.GankHistoryFragment
 import com.andy.kotlin.gank.fragment.GankHomeFragment
 import com.andy.kotlin.gank.fragment.GankMeiziFragment
 import com.andy.kotlin.gank.util.ActivityUtil
+import com.andy.kotlin.gank.util.ToastUtils
 import kotlinx.android.synthetic.main.activity_main.*
 
 
 class MainActivity : BaseActivity() {
 
+    private val MIN_TO_EXIT_MILLIS = 1000L
+    private var mLastOnBackPressedTime = 0L
     private var mPagerAdapter: FragmentPagerAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,6 +31,16 @@ class MainActivity : BaseActivity() {
         mViewPager.adapter = mPagerAdapter
         mViewPager.offscreenPageLimit = mPagerAdapter?.count!!
         mTabLayout.setupWithViewPager(mViewPager)
+    }
+
+    override fun onBackPressed() {
+        val currentTimeMillis = System.currentTimeMillis()
+        if (currentTimeMillis - mLastOnBackPressedTime < MIN_TO_EXIT_MILLIS) {
+            super.onBackPressed()
+        } else {
+            mLastOnBackPressedTime = currentTimeMillis
+            ToastUtils.toast(applicationContext, R.string.press_the_exit_application_again)
+        }
     }
 
     private class MainFragmentPagerAdapter(fm: FragmentManager?) : FragmentPagerAdapter(fm) {
