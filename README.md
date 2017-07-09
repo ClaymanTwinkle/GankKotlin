@@ -1,7 +1,7 @@
 # GankKotlin
-kotlin实现的一个简易的gank app
+kotlin实现的一个gank app
 
-
+![](./image/gank.gif)
 
 # 数据来源
 [Gank API](http://gank.io/api)

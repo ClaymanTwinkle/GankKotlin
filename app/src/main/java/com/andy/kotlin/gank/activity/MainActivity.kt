@@ -31,7 +31,7 @@ class MainActivity : BaseActivity() {
     }
 
     private class MainFragmentPagerAdapter(fm: FragmentManager?) : FragmentPagerAdapter(fm) {
-        val pageTitleList = arrayOf("精品", "妹子", "历史")
+        val pageTitleList = arrayOf("精品", "福利", "历史")
         val fragmentList = arrayOfNulls<Fragment>(pageTitleList.size)
 
         override fun getItem(position: Int): Fragment {
