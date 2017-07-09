@@ -175,6 +175,7 @@ open class GankHomeFragment : BaseFragment() {
         fun setData(dataList: List<GankModel>) {
             mDataList.clear()
             mDataList.addAll(dataList)
+            notifyDataSetChanged()
         }
 
         override fun getView(container: ViewGroup?, position: Int): View {
@@ -184,6 +185,7 @@ open class GankHomeFragment : BaseFragment() {
 
             Glide.with(container?.context)
                     .load(mDataList[position].url)
+                    .listener(LoggerRequestListener())
                     .centerCrop()
                     .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                     .into(view)

@@ -4,7 +4,6 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Handler
-import android.os.Looper
 import android.text.TextUtils
 import com.andy.kotlin.gank.R
 import com.andy.kotlin.gank.db.SPManager
@@ -26,7 +25,9 @@ class SplashActivity : BaseActivity() {
     private var mPicUrl = ""
     private var mSPManager: SPManager? = null
     private var mIsPreLoaded = false
-    private val delayMillis:Long = 3000
+    private val mDelayMillis:Long = 3000
+    private val mHandler:Handler = Handler()
+    private val startMainActivityTask = Runnable { startMainActivity() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -98,12 +99,17 @@ class SplashActivity : BaseActivity() {
             loadData()
         } else {
             mSPManager?.setSplashPic(mPicUrl)
-            Handler(Looper.getMainLooper()).postDelayed({ startMainActivity() }, delayMillis)
+            mHandler.postDelayed(startMainActivityTask, mDelayMillis)
         }
     }
 
     private fun startMainActivity() {
         MainActivity.startActivity(this@SplashActivity)
         finish()
+    }
+
+    override fun onDestroy() {
+        mHandler.removeCallbacks(startMainActivityTask)
+        super.onDestroy()
     }
 }
