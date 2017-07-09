@@ -10,7 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.andy.kotlin.gank.R
-import com.andy.kotlin.gank.activity.WebBrowserActivity
+import com.andy.kotlin.gank.activity.LookPictureActivity
 import com.andy.kotlin.gank.adapter.CommonAdapter
 import com.andy.kotlin.gank.adapter.base.BaseAdapter
 import com.andy.kotlin.gank.image.GlideOnScrollListener
@@ -43,11 +43,14 @@ class GankMeiziFragment : BaseFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        init()
+        initData()
+        initListeners()
+        // 首次进入，转个菊花先
+        mSwipeRefreshLayout.isRefreshing = true
         loadRandomDataList()
     }
 
-    private fun init() {
+    private fun initData() {
         mRecyclerView.layoutManager = LinearLayoutManager(context)
         mRecyclerView.addItemDecoration(object : DividerItemDecoration(context, DividerItemDecoration.VERTICAL) {
             override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
@@ -61,6 +64,9 @@ class GankMeiziFragment : BaseFragment() {
 
         mAdapter = LinearAdapter()
         mRecyclerView.adapter = mAdapter
+    }
+
+    private fun initListeners() {
         mRecyclerView.addOnScrollListener(GlideOnScrollListener(context))
 
         mSwipeRefreshLayout.setOnRefreshListener {
@@ -70,12 +76,9 @@ class GankMeiziFragment : BaseFragment() {
         mAdapter!!.setOnItemClickListener(object : BaseAdapter.OnItemClickListener {
             override fun onItemClick(position: Int, view: View) {
                 val model = mAdapter!!.getItem(position)
-                WebBrowserActivity.startActivity(this@GankMeiziFragment, model.desc!!, model.url!!)
+                LookPictureActivity.startActivity(activity, model.url!!)
             }
         })
-
-        // 首次进入，转个菊花先
-        mSwipeRefreshLayout.isRefreshing = true
     }
 
     private fun loadRandomDataList() {

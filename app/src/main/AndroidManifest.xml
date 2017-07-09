@@ -22,6 +22,10 @@
         </activity>
         <activity android:name=".activity.WebBrowserActivity">
         </activity>
+        <activity android:name=".activity.GankDayActivity">
+        </activity>
+        <activity android:name=".activity.LookPictureActivity">
+        </activity>
     </application>
 
 </manifest>

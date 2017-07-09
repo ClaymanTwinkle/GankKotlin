@@ -1,6 +1,7 @@
 package com.andy.kotlin.gank.activity
 
 import android.support.v7.app.AppCompatActivity
+import android.view.MenuItem
 import rx.Observable
 import rx.Subscriber
 import rx.android.schedulers.AndroidSchedulers
@@ -25,5 +26,12 @@ abstract class BaseActivity : AppCompatActivity() {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(subscriber)
         )
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when(item?.itemId){
+            android.R.id.home -> onBackPressed()
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

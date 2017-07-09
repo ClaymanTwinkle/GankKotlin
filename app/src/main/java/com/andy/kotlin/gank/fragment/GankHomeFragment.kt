@@ -1,5 +1,6 @@
 package com.andy.kotlin.gank.fragment
 
+import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,6 +12,7 @@ import android.widget.AbsListView
 import android.widget.ImageView
 import com.andy.kotlin.gank.Constant
 import com.andy.kotlin.gank.R
+import com.andy.kotlin.gank.activity.LookPictureActivity
 import com.andy.kotlin.gank.activity.WebBrowserActivity
 import com.andy.kotlin.gank.adapter.BaseExpandableListAdapter
 import com.andy.kotlin.gank.db.DBManager
@@ -57,7 +59,7 @@ open class GankHomeFragment : BaseFragment() {
         loadDateData()
     }
 
-    private fun initData() {
+    protected open fun initData() {
         mHeaderViewPresenter = HeaderViewPresenter()
 
         mAdapter = GankDayAdapter(context)
@@ -92,8 +94,7 @@ open class GankHomeFragment : BaseFragment() {
 
     }
 
-    protected fun loadDateData() {
-
+    protected open fun loadDateData() {
         addSubscription(ApiClient.retrofit().loadAllHistoryDayList().flatMap { apiResponse ->
             var today = Date()
             if (!apiResponse!!.isError) {
@@ -105,10 +106,10 @@ open class GankHomeFragment : BaseFragment() {
             val day = DateUtil.getDay(today)
             ApiClient.retrofit().loadDateData(year, month, day)
 
-        }, mLoadDataCallBack)
+        }, LoadDataCallBack())
     }
 
-    protected val mLoadDataCallBack = object : ApiCallBack<ApiResponse<HashMap<String, List<GankModel>>>>() {
+    protected inner class LoadDataCallBack: ApiCallBack<ApiResponse<HashMap<String, List<GankModel>>>>() {
         override fun onSuccess(modelList: ApiResponse<HashMap<String, List<GankModel>>>) {
             if (modelList.isError) {
                 ToastUtils.toast(context, R.string.server_error)
@@ -146,7 +147,7 @@ open class GankHomeFragment : BaseFragment() {
             mRollPagerAdapter = RollPagerAdapter(mHeaderView!!)
             mHeaderView?.setOnItemClickListener { position: Int ->
                 val data = mRollPagerAdapter!!.getData(position)
-                WebBrowserActivity.startActivity(this@GankHomeFragment, data.desc!!, data.url!!)
+                LookPictureActivity.startActivity(this@GankHomeFragment, data.url!!)
             }
             mExListView.addHeaderView(mHeaderView)
         }
@@ -184,6 +185,7 @@ open class GankHomeFragment : BaseFragment() {
             Glide.with(container?.context)
                     .load(mDataList[position].url)
                     .centerCrop()
+                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                     .into(view)
 
             return view
@@ -198,6 +200,7 @@ open class GankHomeFragment : BaseFragment() {
      * 列表的适配器
      */
     class GankDayAdapter(context: Context) : BaseExpandableListAdapter() {
+
         private var mDataList = HashMap<String, List<GankModel>>()
         private var mGroupList = ArrayList<String>()
         private var mInflater: LayoutInflater? = null
@@ -255,13 +258,16 @@ open class GankHomeFragment : BaseFragment() {
             if (child.images == null || child.images!!.isEmpty()) {
                 ivPic.visibility = View.GONE
             } else {
-                ivPic.visibility = View.VISIBLE
                 Glide.with(context)
                         .load(child.images!![0])
                         .listener(LoggerRequestListener())
                         .centerCrop()
                         .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                         .into(ivPic)
+                ivPic.visibility = View.VISIBLE
+                ivPic.setOnClickListener{
+                    LookPictureActivity.startActivity(context as Activity, child.images!![0])
+                }
             }
             tvTitle.text = child.desc
             tvTime.text = DateUtil.format(child.createdAt, Constant.GANK_TIME_FORMAT, DateUtil.YYYY_MM_DD_HH_MM_SS)

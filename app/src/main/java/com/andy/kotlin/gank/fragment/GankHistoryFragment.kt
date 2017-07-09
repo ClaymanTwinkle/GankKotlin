@@ -1,5 +1,6 @@
 package com.andy.kotlin.gank.fragment
 
+import android.app.Activity
 import android.graphics.Rect
 import android.os.Bundle
 import android.support.v7.widget.DividerItemDecoration
@@ -9,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.andy.kotlin.gank.R
+import com.andy.kotlin.gank.activity.LookPictureActivity
 import com.andy.kotlin.gank.activity.WebBrowserActivity
 import com.andy.kotlin.gank.adapter.CommonAdapter
 import com.andy.kotlin.gank.adapter.base.BaseAdapter
@@ -103,13 +105,16 @@ class GankHistoryFragment : BaseFragment() {
             if (data!!.images == null || data.images!!.isEmpty()) {
                 ivPic.visibility = View.GONE
             } else {
-                ivPic.visibility = View.VISIBLE
                 Glide.with(context)
                         .load(data.images!![0])
                         .listener(LoggerRequestListener())
                         .centerCrop()
                         .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                         .into(ivPic)
+                ivPic.visibility = View.VISIBLE
+                ivPic.setOnClickListener{
+                    LookPictureActivity.startActivity(context as Activity, data.images!![0])
+                }
             }
             tvTitle.text = data.desc
             tvTime.text = data.createdAt
