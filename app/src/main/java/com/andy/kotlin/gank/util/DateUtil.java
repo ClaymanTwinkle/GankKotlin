@@ -12,9 +12,10 @@ import java.util.Date;
  *         创建日期：2017/6/19 15:59
  */
 public final class DateUtil {
+    public final static String YYYY_MM_DD_HH_MM_SS = "yyyy-MM-dd HH:mm:ss";
 
-    public static Date parse(String time, String formatString) {
-        SimpleDateFormat sdf = new SimpleDateFormat(formatString);
+    public static Date parse(String time, String pattern) {
+        SimpleDateFormat sdf = new SimpleDateFormat(pattern);
 
         try {
             return sdf.parse(time);
@@ -23,6 +24,15 @@ public final class DateUtil {
         }
 
         return null;
+    }
+
+    public static String format(Date date, String pattern) {
+        SimpleDateFormat sdf = new SimpleDateFormat(pattern);
+        return sdf.format(date);
+    }
+
+    public static String format(String time,String from_pattern, String to_pattern) {
+        return format(parse(time, from_pattern), to_pattern);
     }
 
     public static int getMonth(Date time) {

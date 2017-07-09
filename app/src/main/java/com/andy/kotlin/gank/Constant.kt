@@ -9,5 +9,6 @@ package com.andy.kotlin.gank
 interface Constant {
     companion object {
         val ALL_GANK_TYPE = arrayOf("福利", "Android", "iOS", "休息视频", "拓展资源", "前端", "瞎推荐", "App")
+        val GANK_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
     }
 }

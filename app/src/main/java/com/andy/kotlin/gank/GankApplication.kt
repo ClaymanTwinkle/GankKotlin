@@ -2,6 +2,7 @@ package com.andy.kotlin.gank
 
 import android.app.Application
 import android.content.Context
+import com.andy.kotlin.gank.db.DBManager
 
 /**
  * GankApplication
@@ -13,6 +14,7 @@ class GankApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         context = this
+        DBManager.init(this)
     }
 
     companion object {

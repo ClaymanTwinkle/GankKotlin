@@ -12,27 +12,29 @@ import com.andy.kotlin.gank.R
 import com.andy.kotlin.gank.activity.WebBrowserActivity
 import com.andy.kotlin.gank.adapter.CommonAdapter
 import com.andy.kotlin.gank.adapter.base.BaseAdapter
+import com.andy.kotlin.gank.db.DBManager
 import com.andy.kotlin.gank.image.GlideOnScrollListener
 import com.andy.kotlin.gank.model.GankModel
-import com.andy.kotlin.gank.net.ApiResponse
 import com.andy.kotlin.gank.util.DensityUtils
 import com.andy.kotlin.gank.util.LoggerRequestListener
 import com.andy.kotlin.gank.util.ToastUtils
 import com.andy.kotlinandroid.net.ApiCallBack
-import com.andy.kotlinandroid.net.ApiClient
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import kotlinx.android.synthetic.main.fragment_random_gank.*
 import kotlinx.android.synthetic.main.list_item_gank.view.*
+import rx.Observable
+
+
 
 /**
- * MainFragment
+ * GankHistoryFragment
 
  * @author andyqtchen <br></br>
- * *         MainFragment
+ * *         GankHistoryFragment
  * *         创建日期：2017/6/7 15:29
  */
-class GankRandomFragment : BaseFragment() {
+class GankHistoryFragment : BaseFragment() {
 
     private var mAdapter: LinearAdapter? = null
 
@@ -69,7 +71,7 @@ class GankRandomFragment : BaseFragment() {
         mAdapter!!.setOnItemClickListener(object : BaseAdapter.OnItemClickListener {
             override fun onItemClick(position: Int, view: View) {
                 val model = mAdapter!!.getItem(position)
-                WebBrowserActivity.startActivity(this@GankRandomFragment, model.desc!!, model.url!!)
+                WebBrowserActivity.startActivity(this@GankHistoryFragment, model.desc!!, model.url!!)
             }
         })
 
@@ -78,7 +80,10 @@ class GankRandomFragment : BaseFragment() {
     }
 
     private fun loadRandomDataList() {
-        addSubscription(ApiClient.retrofit().loadRandomData("all", 20), object : ApiCallBack<ApiResponse<List<GankModel>>>(){
+        addSubscription(Observable.create { subscriber ->
+            subscriber?.onNext(DBManager.mLazyDB?.query(GankModel::class.java)?.findAll())
+            subscriber?.onCompleted()
+        }, object : ApiCallBack<List<GankModel>>(){
             override fun onFailure(code: Int, msg: String?) {
                 ToastUtils.toast(context, msg)
             }
@@ -87,15 +92,8 @@ class GankRandomFragment : BaseFragment() {
                 mSwipeRefreshLayout.isRefreshing = false
             }
 
-            override fun onSuccess(modelList: ApiResponse<List<GankModel>>) {
-                if (modelList.isError) {
-                        ToastUtils.toast(context, R.string.server_error)
-                } else {
-                    if(modelList.results == null){
-                        return
-                    }
-                    mAdapter!!.setAllItemsAndRefresh(modelList.results!!)
-                }
+            override fun onSuccess(modelList: List<GankModel>) {
+                    mAdapter!!.setAllItemsAndRefresh(modelList)
             }
         })
     }

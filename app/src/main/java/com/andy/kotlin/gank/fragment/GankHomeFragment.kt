@@ -7,10 +7,13 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import android.widget.AbsListView
 import android.widget.ImageView
+import com.andy.kotlin.gank.Constant
 import com.andy.kotlin.gank.R
 import com.andy.kotlin.gank.activity.WebBrowserActivity
 import com.andy.kotlin.gank.adapter.BaseExpandableListAdapter
+import com.andy.kotlin.gank.db.DBManager
 import com.andy.kotlin.gank.model.GankModel
 import com.andy.kotlin.gank.net.ApiResponse
 import com.andy.kotlin.gank.util.DateUtil
@@ -37,7 +40,7 @@ import kotlin.collections.HashMap
  * *         天天精品
  * *         创建日期：2017/6/9 10:22
  */
-class GankDayFragment : BaseFragment() {
+open class GankHomeFragment : BaseFragment() {
 
     private var mAdapter: GankDayAdapter? = null
     private var mHeaderViewPresenter: HeaderViewPresenter? = null
@@ -48,30 +51,48 @@ class GankDayFragment : BaseFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        init()
+        initData()
+        initListeners()
+        mSwipeRefreshLayout.isRefreshing = true
         loadDateData()
     }
 
-    private fun init() {
+    private fun initData() {
         mHeaderViewPresenter = HeaderViewPresenter()
 
         mAdapter = GankDayAdapter(context)
         mExListView.setAdapter(mAdapter)
+    }
+
+    private fun initListeners() {
         mExListView.setOnGroupClickListener { parent, v, groupPosition, id -> true }
         mExListView.setOnChildClickListener { parent, v, groupPosition, childPosition, id ->
             val data = mAdapter!!.getChild(groupPosition, childPosition)!!
-            WebBrowserActivity.startActivity(this@GankDayFragment, data.desc, data.url)
+            WebBrowserActivity.startActivity(this@GankHomeFragment, data.desc!!, data.url!!)
+            DBManager.mLazyDB?.insertOrUpdate(data)
             true
         }
+
+        mExListView.setOnScrollListener(object : AbsListView.OnScrollListener{
+            override fun onScroll(view: AbsListView?, firstVisibleItem: Int, visibleItemCount: Int, totalItemCount: Int) {
+            }
+
+            override fun onScrollStateChanged(view: AbsListView?, scrollState: Int) {
+                when(scrollState){
+                    AbsListView.OnScrollListener.SCROLL_STATE_FLING -> Glide.with(context).pauseRequests()
+                    else -> Glide.with(context).resumeRequests()
+                }
+            }
+
+        })
 
         mSwipeRefreshLayout.setOnRefreshListener {
             loadDateData()
         }
 
-        mSwipeRefreshLayout.isRefreshing = true
     }
 
-    private fun loadDateData() {
+    protected fun loadDateData() {
 
         addSubscription(ApiClient.retrofit().loadAllHistoryDayList().flatMap { apiResponse ->
             var today = Date()
@@ -84,29 +105,31 @@ class GankDayFragment : BaseFragment() {
             val day = DateUtil.getDay(today)
             ApiClient.retrofit().loadDateData(year, month, day)
 
-        }, object : ApiCallBack<ApiResponse<HashMap<String, List<GankModel>>>>() {
-            override fun onSuccess(model: ApiResponse<HashMap<String, List<GankModel>>>) {
-                if (model.isError) {
-                    ToastUtils.toast(context, R.string.server_error)
-                } else {
-                    GLog.d(model.results.toString())
-                    mAdapter!!.setData(model.results!!)
-                    mHeaderViewPresenter?.setData(model.results!!)
-                    for (i in mAdapter!!.getGroupList().indices) {
-                        mExListView.expandGroup(i)
-                    }
+        }, mLoadDataCallBack)
+    }
+
+    protected val mLoadDataCallBack = object : ApiCallBack<ApiResponse<HashMap<String, List<GankModel>>>>() {
+        override fun onSuccess(modelList: ApiResponse<HashMap<String, List<GankModel>>>) {
+            if (modelList.isError) {
+                ToastUtils.toast(context, R.string.server_error)
+            } else {
+                GLog.d(modelList.results.toString())
+                mAdapter!!.setData(modelList.results!!)
+                mHeaderViewPresenter?.setData(modelList.results!!)
+                for (i in mAdapter!!.getGroupList().indices) {
+                    mExListView.expandGroup(i)
                 }
             }
+        }
 
-            override fun onFailure(code: Int, msg: String?) {
-                mHeaderViewPresenter?.hideHeader()
-                ToastUtils.toast(context, msg)
-            }
+        override fun onFailure(code: Int, msg: String?) {
+            mHeaderViewPresenter?.hideHeader()
+            ToastUtils.toast(context, msg)
+        }
 
-            override fun onFinish() {
-                mSwipeRefreshLayout.isRefreshing = false
-            }
-        })
+        override fun onFinish() {
+            mSwipeRefreshLayout.isRefreshing = false
+        }
     }
 
     /**
@@ -123,7 +146,7 @@ class GankDayFragment : BaseFragment() {
             mRollPagerAdapter = RollPagerAdapter(mHeaderView!!)
             mHeaderView?.setOnItemClickListener { position: Int ->
                 val data = mRollPagerAdapter!!.getData(position)
-                WebBrowserActivity.startActivity(this@GankDayFragment, data.desc, data.url)
+                WebBrowserActivity.startActivity(this@GankHomeFragment, data.desc!!, data.url!!)
             }
             mExListView.addHeaderView(mHeaderView)
         }
@@ -229,19 +252,19 @@ class GankDayFragment : BaseFragment() {
         }
 
         fun bindChildView(child: GankModel, childView: View) = with(childView) {
-            if (child.images == null || child.images.isEmpty()) {
+            if (child.images == null || child.images!!.isEmpty()) {
                 ivPic.visibility = View.GONE
             } else {
                 ivPic.visibility = View.VISIBLE
                 Glide.with(context)
-                        .load(child.images[0])
+                        .load(child.images!![0])
                         .listener(LoggerRequestListener())
                         .centerCrop()
                         .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                         .into(ivPic)
             }
             tvTitle.text = child.desc
-            tvTime.text = child.createdAt
+            tvTime.text = DateUtil.format(child.createdAt, Constant.GANK_TIME_FORMAT, DateUtil.YYYY_MM_DD_HH_MM_SS)
             tvType.text = child.type
         }
     }

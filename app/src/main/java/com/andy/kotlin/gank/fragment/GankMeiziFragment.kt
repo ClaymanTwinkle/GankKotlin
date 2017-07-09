@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -32,7 +33,7 @@ import kotlinx.android.synthetic.main.list_item_gank.view.*
  * *         MainFragment
  * *         创建日期：2017/6/7 15:29
  */
-class GankRandomFragment : BaseFragment() {
+class GankMeiziFragment : BaseFragment() {
 
     private var mAdapter: LinearAdapter? = null
 
@@ -69,7 +70,7 @@ class GankRandomFragment : BaseFragment() {
         mAdapter!!.setOnItemClickListener(object : BaseAdapter.OnItemClickListener {
             override fun onItemClick(position: Int, view: View) {
                 val model = mAdapter!!.getItem(position)
-                WebBrowserActivity.startActivity(this@GankRandomFragment, model.desc!!, model.url!!)
+                WebBrowserActivity.startActivity(this@GankMeiziFragment, model.desc!!, model.url!!)
             }
         })
 
@@ -78,7 +79,7 @@ class GankRandomFragment : BaseFragment() {
     }
 
     private fun loadRandomDataList() {
-        addSubscription(ApiClient.retrofit().loadRandomData("all", 20), object : ApiCallBack<ApiResponse<List<GankModel>>>(){
+        addSubscription(ApiClient.retrofit().loadRandomData("福利", 20), object : ApiCallBack<ApiResponse<List<GankModel>>>(){
             override fun onFailure(code: Int, msg: String?) {
                 ToastUtils.toast(context, msg)
             }
@@ -100,22 +101,19 @@ class GankRandomFragment : BaseFragment() {
         })
     }
 
-    private inner class LinearAdapter : CommonAdapter<GankModel>(R.layout.list_item_gank) {
+    private inner class LinearAdapter : CommonAdapter<GankModel>(R.layout.list_item_meizi) {
         override fun bindView(itemView: View, data: GankModel?, position: Int) = with(itemView) {
-            if (data!!.images == null || data.images!!.isEmpty()) {
+            if (TextUtils.isEmpty(data!!.url)) {
                 ivPic.visibility = View.GONE
             } else {
-                ivPic.visibility = View.VISIBLE
                 Glide.with(context)
-                        .load(data.images!![0])
+                        .load(data.url!!)
                         .listener(LoggerRequestListener())
                         .centerCrop()
                         .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                         .into(ivPic)
+                ivPic.visibility = View.VISIBLE
             }
-            tvTitle.text = data.desc
-            tvTime.text = data.createdAt
-            tvType.text = data.type
         }
     }
 }

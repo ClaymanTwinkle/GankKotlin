@@ -11,7 +11,7 @@ import rx.Subscriber
  * 创建日期：2017/6/5 11:34
  */
 abstract class ApiCallBack<M> : Subscriber<M>() {
-    abstract fun onSuccess(model: M)
+    abstract fun onSuccess(modelList: M)
     abstract fun onFailure(code: Int,msg: String?)
     abstract fun onFinish()
 

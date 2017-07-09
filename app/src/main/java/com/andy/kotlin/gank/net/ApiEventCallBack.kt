@@ -12,8 +12,8 @@ import com.andy.kotlinandroid.net.ApiCallBack
 </M></M> */
 class ApiEventCallBack<M> : ApiCallBack<M>() {
 
-    override fun onSuccess(model: M) {
-        Dispatcher.post(ApiEvent(model))
+    override fun onSuccess(modelList: M) {
+        Dispatcher.post(ApiEvent(modelList))
     }
 
     override fun onFinish() {

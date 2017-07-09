@@ -47,5 +47,5 @@ dependencies {
     compile 'com.noveogroup.android:android-logger:1.3.5'
 
     compile 'com.jude:rollviewpager:1.4.6'
-    compile 'com.kesar:lazydb:1.0.9'
+    compile 'com.kesar:lazydb:1.1.1'
 }
