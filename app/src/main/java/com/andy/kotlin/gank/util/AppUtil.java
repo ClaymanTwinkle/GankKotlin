@@ -15,9 +15,11 @@ public final class AppUtil {
         if (context != null) {
             ConnectivityManager mConnectivityManager = (ConnectivityManager) context
                     .getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo mNetworkInfo = mConnectivityManager.getActiveNetworkInfo();
-            if (mNetworkInfo != null) {
-                return mNetworkInfo.isAvailable();
+            if (mConnectivityManager != null) {
+                NetworkInfo mNetworkInfo = mConnectivityManager.getActiveNetworkInfo();
+                if (mNetworkInfo != null) {
+                    return mNetworkInfo.isAvailable();
+                }
             }
         }
         return false;

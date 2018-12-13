@@ -113,7 +113,7 @@ class GankMeiziFragment : BaseFragment() {
                         .load(data.url!!)
                         .listener(LoggerRequestListener())
                         .centerCrop()
-                        .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                        .diskCacheStrategy(DiskCacheStrategy.RESULT)
                         .into(ivPic)
                 ivPic.visibility = View.VISIBLE
             }

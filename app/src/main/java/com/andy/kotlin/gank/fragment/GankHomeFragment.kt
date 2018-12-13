@@ -102,7 +102,7 @@ open class GankHomeFragment : BaseFragment() {
                 today = DateUtil.parse(theNewTimeStr, "yyyy-MM-dd")
             }
             val year = DateUtil.getYear(today)
-            val month = DateUtil.getMonth(today)
+            val month = DateUtil.getMonth(today)+1
             val day = DateUtil.getDay(today)
             ApiClient.retrofit().loadDateData(year, month, day)
 
