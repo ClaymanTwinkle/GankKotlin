@@ -9,13 +9,13 @@ import org.kesar.lazy.lazydb.config.DBConfig
  * Created by Andy on 2017/7/8.
  */
 object DBManager {
-    var mLazyDB: LazyDB? = null
+    var sLazyDB: LazyDB? = null
 
     fun init(context: Context) {
         DBConfig.Builder(context)
                 .setDebug(true)
 
-        mLazyDB = LazyDB.create(
+        sLazyDB = LazyDB.create(
                 DBConfig.Builder(context)
                 .setDebug(true)
                         .setDataBaseName("app.db")

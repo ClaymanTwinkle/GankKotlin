@@ -9,20 +9,20 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.andy.kotlin.gank.Constant
 import com.andy.kotlin.gank.R
 import com.andy.kotlin.gank.activity.LookPictureActivity
 import com.andy.kotlin.gank.activity.WebBrowserActivity
 import com.andy.kotlin.gank.adapter.CommonAdapter
 import com.andy.kotlin.gank.adapter.base.BaseAdapter
 import com.andy.kotlin.gank.db.DBManager
-import com.andy.kotlin.gank.image.GlideOnScrollListener
+import com.andy.kotlin.gank.image.GlideOnRecyclerViewScrollListener
+import com.andy.kotlin.gank.image.ImageLoader
 import com.andy.kotlin.gank.model.GankModel
+import com.andy.kotlin.gank.util.DateUtil
 import com.andy.kotlin.gank.util.DensityUtils
-import com.andy.kotlin.gank.util.LoggerRequestListener
 import com.andy.kotlin.gank.util.ToastUtils
 import com.andy.kotlinandroid.net.ApiCallBack
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import kotlinx.android.synthetic.main.fragment_random_gank.*
 import kotlinx.android.synthetic.main.list_item_gank.view.*
 import rx.Observable
@@ -47,7 +47,7 @@ class GankHistoryFragment : BaseFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         init()
-        loadRandomDataList()
+        loadDataList()
     }
 
     private fun init() {
@@ -64,10 +64,10 @@ class GankHistoryFragment : BaseFragment() {
 
         mAdapter = LinearAdapter()
         mRecyclerView.adapter = mAdapter
-        mRecyclerView.addOnScrollListener(GlideOnScrollListener(context))
+        mRecyclerView.addOnScrollListener(GlideOnRecyclerViewScrollListener(context))
 
         mSwipeRefreshLayout.setOnRefreshListener {
-            loadRandomDataList()
+            loadDataList()
         }
 
         mAdapter!!.setOnItemClickListener(object : BaseAdapter.OnItemClickListener {
@@ -81,9 +81,9 @@ class GankHistoryFragment : BaseFragment() {
         mSwipeRefreshLayout.isRefreshing = true
     }
 
-    private fun loadRandomDataList() {
+    private fun loadDataList() {
         addSubscription(Observable.create { subscriber ->
-            subscriber?.onNext(DBManager.mLazyDB?.query(GankModel::class.java)?.findAll())
+            subscriber?.onNext(DBManager.sLazyDB!!.query(GankModel::class.java).orderBy("createdAt DESC").findAll())
             subscriber?.onCompleted()
         }, object : ApiCallBack<List<GankModel>>(){
             override fun onFailure(code: Int, msg: String?) {
@@ -101,23 +101,27 @@ class GankHistoryFragment : BaseFragment() {
     }
 
     private inner class LinearAdapter : CommonAdapter<GankModel>(R.layout.list_item_gank) {
+
+        val picWidth:Int
+        val picHeight:Int
+
+        init {
+            picWidth = DensityUtils.dip2px(activity, 100.toFloat())
+            picHeight = picWidth
+        }
+
         override fun bindView(itemView: View, data: GankModel?, position: Int) = with(itemView) {
             if (data!!.images == null || data.images!!.isEmpty()) {
                 ivPic.visibility = View.GONE
             } else {
-                Glide.with(context)
-                        .load(data.images!![0])
-                        .listener(LoggerRequestListener())
-                        .centerCrop()
-                        .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                        .into(ivPic)
+                ImageLoader.loadImage(ivPic, data.images!![0], picWidth, picHeight)
                 ivPic.visibility = View.VISIBLE
                 ivPic.setOnClickListener{
                     LookPictureActivity.startActivity(context as Activity, data.images!![0])
                 }
             }
             tvTitle.text = data.desc
-            tvTime.text = data.createdAt
+            tvTime.text = DateUtil.format(data.createdAt, Constant.GANK_TIME_FORMAT, DateUtil.YYYY_MM_DD_HH_MM_SS)
             tvType.text = data.type
         }
     }

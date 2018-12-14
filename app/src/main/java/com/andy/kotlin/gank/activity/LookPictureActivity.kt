@@ -5,8 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import com.andy.kotlin.gank.R
-import com.andy.kotlin.gank.util.LoggerRequestListener
-import com.bumptech.glide.Glide
+import com.andy.kotlin.gank.image.ImageLoader
 import kotlinx.android.synthetic.main.activity_look_picture.*
 
 class LookPictureActivity : BaseActivity() {
@@ -26,10 +25,7 @@ class LookPictureActivity : BaseActivity() {
     private fun initView() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        Glide.with(this)
-                .load(mUrl)
-                .listener(LoggerRequestListener())
-                .into(mIvPic)
+        ImageLoader.loadImage(this, mIvPic, mUrl)
     }
 
     companion object {

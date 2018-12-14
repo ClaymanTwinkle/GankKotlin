@@ -13,16 +13,15 @@ import com.andy.kotlin.gank.R
 import com.andy.kotlin.gank.activity.LookPictureActivity
 import com.andy.kotlin.gank.adapter.CommonAdapter
 import com.andy.kotlin.gank.adapter.base.BaseAdapter
-import com.andy.kotlin.gank.image.GlideOnScrollListener
+import com.andy.kotlin.gank.image.GlideOnRecyclerViewScrollListener
+import com.andy.kotlin.gank.image.ImageLoader
 import com.andy.kotlin.gank.model.GankModel
 import com.andy.kotlin.gank.net.ApiResponse
 import com.andy.kotlin.gank.util.DensityUtils
-import com.andy.kotlin.gank.util.LoggerRequestListener
+import com.andy.kotlin.gank.util.ScreenUtil
 import com.andy.kotlin.gank.util.ToastUtils
 import com.andy.kotlinandroid.net.ApiCallBack
 import com.andy.kotlinandroid.net.ApiClient
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import kotlinx.android.synthetic.main.fragment_random_gank.*
 import kotlinx.android.synthetic.main.list_item_gank.view.*
 
@@ -67,7 +66,7 @@ class GankMeiziFragment : BaseFragment() {
     }
 
     private fun initListeners() {
-        mRecyclerView.addOnScrollListener(GlideOnScrollListener(context))
+        mRecyclerView.addOnScrollListener(GlideOnRecyclerViewScrollListener(context))
 
         mSwipeRefreshLayout.setOnRefreshListener {
             loadRandomDataList()
@@ -105,16 +104,19 @@ class GankMeiziFragment : BaseFragment() {
     }
 
     private inner class LinearAdapter : CommonAdapter<GankModel>(R.layout.list_item_meizi) {
+
+        val picWidth:Int
+        val picHeight:Int
+
+        init {
+            picWidth = ScreenUtil.getWindowScreenWidth(activity) - DensityUtils.dip2px(activity, 20.toFloat())
+            picHeight = DensityUtils.dip2px(activity, 100.toFloat())
+        }
         override fun bindView(itemView: View, data: GankModel?, position: Int) = with(itemView) {
             if (TextUtils.isEmpty(data!!.url)) {
                 ivPic.visibility = View.GONE
             } else {
-                Glide.with(context)
-                        .load(data.url!!)
-                        .listener(LoggerRequestListener())
-                        .centerCrop()
-                        .diskCacheStrategy(DiskCacheStrategy.RESULT)
-                        .into(ivPic)
+                ImageLoader.loadImage(ivPic, data.url!!, picWidth, picHeight)
                 ivPic.visibility = View.VISIBLE
             }
         }

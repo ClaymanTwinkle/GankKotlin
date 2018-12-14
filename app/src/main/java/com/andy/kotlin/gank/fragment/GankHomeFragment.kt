@@ -16,16 +16,12 @@ import com.andy.kotlin.gank.activity.LookPictureActivity
 import com.andy.kotlin.gank.activity.WebBrowserActivity
 import com.andy.kotlin.gank.adapter.BaseExpandableListAdapter
 import com.andy.kotlin.gank.db.DBManager
+import com.andy.kotlin.gank.image.ImageLoader
 import com.andy.kotlin.gank.model.GankModel
 import com.andy.kotlin.gank.net.ApiResponse
-import com.andy.kotlin.gank.util.DateUtil
-import com.andy.kotlin.gank.util.GLog
-import com.andy.kotlin.gank.util.LoggerRequestListener
-import com.andy.kotlin.gank.util.ToastUtils
+import com.andy.kotlin.gank.util.*
 import com.andy.kotlinandroid.net.ApiCallBack
 import com.andy.kotlinandroid.net.ApiClient
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.jude.rollviewpager.RollPagerView
 import com.jude.rollviewpager.adapter.LoopPagerAdapter
 import kotlinx.android.synthetic.main.fragment_day_gank.*
@@ -71,18 +67,28 @@ open class GankHomeFragment : BaseFragment() {
         mExListView.setOnChildClickListener { parent, v, groupPosition, childPosition, id ->
             val data = mAdapter!!.getChild(groupPosition, childPosition)!!
             WebBrowserActivity.startActivity(this@GankHomeFragment, data.desc!!, data.url!!)
-            DBManager.mLazyDB?.insertOrUpdate(data)
+            DBManager.sLazyDB?.insertOrUpdate(data)
             true
         }
 
-        mExListView.setOnScrollListener(object : AbsListView.OnScrollListener{
+        mExListView.setOnScrollListener(object : AbsListView.OnScrollListener {
+            private var mIsPauseRequests = false
+
             override fun onScroll(view: AbsListView?, firstVisibleItem: Int, visibleItemCount: Int, totalItemCount: Int) {
             }
 
             override fun onScrollStateChanged(view: AbsListView?, scrollState: Int) {
-                when(scrollState){
-                    AbsListView.OnScrollListener.SCROLL_STATE_FLING -> Glide.with(context).pauseRequests()
-                    else -> Glide.with(context).resumeRequests()
+                when (scrollState) {
+                    AbsListView.OnScrollListener.SCROLL_STATE_FLING -> {
+                        mIsPauseRequests = true
+                        ImageLoader.pauseRequests(context)
+                    }
+                    else -> {
+                        if (mIsPauseRequests) {
+                            mIsPauseRequests = false
+                            ImageLoader.resumeRequests(context)
+                        }
+                    }
                 }
             }
 
@@ -102,14 +108,14 @@ open class GankHomeFragment : BaseFragment() {
                 today = DateUtil.parse(theNewTimeStr, "yyyy-MM-dd")
             }
             val year = DateUtil.getYear(today)
-            val month = DateUtil.getMonth(today)+1
+            val month = DateUtil.getMonth(today) + 1
             val day = DateUtil.getDay(today)
             ApiClient.retrofit().loadDateData(year, month, day)
 
         }, LoadDataCallBack())
     }
 
-    protected inner class LoadDataCallBack: ApiCallBack<ApiResponse<HashMap<String, List<GankModel>>>>() {
+    protected inner class LoadDataCallBack : ApiCallBack<ApiResponse<HashMap<String, List<GankModel>>>>() {
         override fun onSuccess(modelList: ApiResponse<HashMap<String, List<GankModel>>>) {
             if (modelList.isError) {
                 ToastUtils.toast(context, R.string.server_error)
@@ -172,6 +178,14 @@ open class GankHomeFragment : BaseFragment() {
     class RollPagerAdapter(viewPager: RollPagerView) : LoopPagerAdapter(viewPager) {
         private val mDataList = ArrayList<GankModel>()
 
+        val picWidth:Int
+        val picHeight:Int
+
+        init {
+            picWidth = ScreenUtil.getWindowScreenWidth(viewPager.context)
+            picHeight = DensityUtils.dip2px(viewPager.context, 210.toFloat())
+        }
+
         fun setData(dataList: List<GankModel>) {
             mDataList.clear()
             mDataList.addAll(dataList)
@@ -183,12 +197,7 @@ open class GankHomeFragment : BaseFragment() {
             view.scaleType = ImageView.ScaleType.CENTER_CROP
             view.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
 
-            Glide.with(container?.context)
-                    .load(mDataList[position].url)
-                    .listener(LoggerRequestListener())
-                    .centerCrop()
-                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                    .into(view)
+            ImageLoader.loadImage(view, mDataList[position].url, picWidth, picHeight)
 
             return view
         }
@@ -260,14 +269,9 @@ open class GankHomeFragment : BaseFragment() {
             if (child.images == null || child.images!!.isEmpty()) {
                 ivPic.visibility = View.GONE
             } else {
-                Glide.with(context)
-                        .load(child.images!![0])
-                        .listener(LoggerRequestListener())
-                        .centerCrop()
-                        .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                        .into(ivPic)
+                ImageLoader.loadImage(ivPic,child.images!![0])
                 ivPic.visibility = View.VISIBLE
-                ivPic.setOnClickListener{
+                ivPic.setOnClickListener {
                     LookPictureActivity.startActivity(context as Activity, child.images!![0])
                 }
             }

@@ -1,32 +1,28 @@
 package com.andy.kotlin.gank.activity
 
-import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Handler
 import android.text.TextUtils
 import com.andy.kotlin.gank.R
 import com.andy.kotlin.gank.db.SPManager
+import com.andy.kotlin.gank.image.ImageLoader
 import com.andy.kotlin.gank.model.GankModel
 import com.andy.kotlin.gank.net.ApiResponse
-import com.andy.kotlin.gank.util.GLog
+import com.andy.kotlin.gank.util.LoggerRequestListener
 import com.andy.kotlin.gank.util.ToastUtils
 import com.andy.kotlinandroid.net.ApiCallBack
 import com.andy.kotlinandroid.net.ApiClient
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.request.animation.GlideAnimation
-import com.bumptech.glide.request.target.SimpleTarget
+import com.bumptech.glide.load.resource.drawable.GlideDrawable
+import com.bumptech.glide.request.target.Target
 import kotlinx.android.synthetic.main.activity_splash.*
-import java.lang.Exception
 
 class SplashActivity : BaseActivity() {
 
     private var mPicUrl = ""
     private var mSPManager: SPManager? = null
     private var mIsPreLoaded = false
-    private val mDelayMillis:Long = 3000
-    private val mHandler:Handler = Handler()
+    private val mDelayMillis: Long = 2000
+    private val mHandler: Handler = Handler()
     private val startMainActivityTask = Runnable { startMainActivity() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,28 +69,24 @@ class SplashActivity : BaseActivity() {
         })
     }
 
-    private fun loadImage(picUrl:String){
-        Glide.with(this)
-                .load(picUrl)
-                .asBitmap()
-                .centerCrop()
-                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                .into(object : SimpleTarget<Bitmap>() {
-                    override fun onResourceReady(resource: Bitmap?, glideAnimation: GlideAnimation<in Bitmap>?) {
-                        mIvPic.setImageBitmap(resource)
-                        doAfterLoaded()
-                    }
+    private fun loadImage(picUrl: String) {
+        ImageLoader.loadImage(this, mIvPic, picUrl, object : LoggerRequestListener() {
+            override fun onResourceReady(resource: GlideDrawable, model: String, target: Target<GlideDrawable>, isFromMemoryCache: Boolean, isFirstResource: Boolean): Boolean {
+                val result = super.onResourceReady(resource, model, target, isFromMemoryCache, isFirstResource)
+                doAfterLoaded()
+                return result
+            }
 
-                    override fun onLoadFailed(e: Exception?, errorDrawable: Drawable?) {
-                        super.onLoadFailed(e, errorDrawable)
-                        GLog.e(e)
-                        doAfterLoaded()
-                    }
-                })
+            override fun onException(e: Exception, model: String, target: Target<GlideDrawable>, isFirstResource: Boolean): Boolean {
+                val result = super.onException(e, model, target, isFirstResource)
+                doAfterLoaded()
+                return result
+            }
+        })
     }
 
     private fun doAfterLoaded() {
-        if(mIsPreLoaded){
+        if (mIsPreLoaded) {
             mIsPreLoaded = false
             loadData()
         } else {
