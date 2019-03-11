@@ -13,7 +13,7 @@ import rx.Observable
  */
 interface ApiStores {
     companion object {
-        val API_SERVER_URL = "http://gank.io/api/"
+        const val API_SERVER_URL = "http://gank.io/api/"
     }
 
     // 随机数据
@@ -27,4 +27,7 @@ interface ApiStores {
     // 获取所有历史日期
     @GET("day/history")
     fun loadAllHistoryDayList(): Observable<ApiResponse<List<String>>>
+
+    @GET("today")
+    fun loadToday(): Observable<ApiResponse<HashMap<String,List<GankModel>>>>
 }

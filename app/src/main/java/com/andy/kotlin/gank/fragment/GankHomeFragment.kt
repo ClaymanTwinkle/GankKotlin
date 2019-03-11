@@ -27,9 +27,6 @@ import com.jude.rollviewpager.adapter.LoopPagerAdapter
 import kotlinx.android.synthetic.main.fragment_day_gank.*
 import kotlinx.android.synthetic.main.list_item_content_gank_list.view.*
 import kotlinx.android.synthetic.main.list_item_title_gank_list.view.*
-import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 /**
  * GankDayFragment
@@ -101,18 +98,7 @@ open class GankHomeFragment : BaseFragment() {
     }
 
     protected open fun loadDateData() {
-        addSubscription(ApiClient.retrofit().loadAllHistoryDayList().flatMap { apiResponse ->
-            var today = Date()
-            if (!apiResponse!!.isError) {
-                val theNewTimeStr = apiResponse.results?.first()
-                today = DateUtil.parse(theNewTimeStr, "yyyy-MM-dd")
-            }
-            val year = DateUtil.getYear(today)
-            val month = DateUtil.getMonth(today) + 1
-            val day = DateUtil.getDay(today)
-            ApiClient.retrofit().loadDateData(year, month, day)
-
-        }, LoadDataCallBack())
+        addSubscription(ApiClient.retrofit().loadToday(), LoadDataCallBack())
     }
 
     protected inner class LoadDataCallBack : ApiCallBack<ApiResponse<HashMap<String, List<GankModel>>>>() {
